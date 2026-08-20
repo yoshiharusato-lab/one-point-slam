@@ -17,12 +17,14 @@ module ApplicationHelper
     end
   end
 
-  def match_player_class(participant, match, viewing_user)
-    return "text-slate-400 italic" if participant.nil?
-
-    classes = []
-    classes << "font-bold text-emerald-700" if match.winner_id == participant.id
-    classes << "ring-2 ring-amber-300 rounded px-1" if viewing_user && participant.user_id == viewing_user.id
-    classes.join(" ")
+  # avatar が未設定の場合は共通のデフォルト画像を表示する。
+  # (この環境には画像変換ライブラリ(libvips等)が無いため、variantでのリサイズはせず
+  #  元画像をそのまま出し、表示サイズはCSS側の width/height/object-fit で揃えている)
+  def user_avatar_tag(user, css_class: "avatar")
+    if user&.avatar&.attached?
+      image_tag user.avatar, class: css_class, alt: user.name
+    else
+      image_tag "default_avatar.jpg", class: css_class, alt: user&.name.to_s
+    end
   end
 end

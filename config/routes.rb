@@ -13,7 +13,7 @@ Rails.application.routes.draw do
     resource :report, only: %i[ create ]
   end
 
-  resources :users, only: %i[ index show ]
+  resources :users, only: %i[ index show update ]
 
   get "about" => "home#about", as: :about
   get "my_match" => "home#my_match", as: :my_match

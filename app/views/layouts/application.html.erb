@@ -28,7 +28,7 @@
           <%= link_to "トーナメント全体", tournaments_path, class: "text-slate-600 hover:text-slate-900" %>
           <%= link_to "自分の次の試合", my_match_path, class: "text-slate-600 hover:text-slate-900" %>
           <%= link_to "ユーザー一覧", users_path, class: "text-slate-600 hover:text-slate-900" %>
-          <%= link_to "自身のプロフィール", user_path(current_user), class: "text-slate-600 hover:text-slate-900" %>
+          <%= link_to "プロフィール", user_path(current_user), class: "text-slate-600 hover:text-slate-900" %>
           <% if current_user.admin? %>
             <%= link_to "トーナメント作成", new_tournament_path, class: "px-3 py-1.5 bg-emerald-600 text-white rounded-lg hover:bg-emerald-500 font-medium" %>
           <% end %>
@@ -39,7 +39,8 @@
 
         <div class="ml-auto flex items-center gap-3">
           <% if authenticated? %>
-            <span class="text-slate-600 hidden sm:inline">
+            <span class="text-slate-600 hidden sm:inline-flex items-center gap-2">
+              <%= user_avatar_tag(current_user, css_class: "avatar avatar--sm") %>
               <%= current_user.name %>
               <% if current_user.admin? %>
                 <span class="ml-1 px-2 py-0.5 bg-amber-100 text-amber-800 rounded-full text-xs">管理者</span>
