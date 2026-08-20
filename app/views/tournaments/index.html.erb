@@ -1,0 +1,23 @@
+<h1 class="text-3xl font-bold text-slate-800 mb-6">トーナメント全体</h1>
+
+<% if @tournaments.any? %>
+  <ul class="space-y-3">
+    <% @tournaments.each do |tournament| %>
+      <li>
+        <%= link_to tournament_path(tournament), class: "block p-4 bg-white rounded-xl border border-slate-200 hover:border-emerald-200 hover:bg-emerald-50 transition shadow-sm" do %>
+          <div class="flex items-center justify-between">
+            <span class="font-medium text-slate-800 text-lg"><%= tournament.name %></span>
+            <span class="text-xs px-2 py-0.5 rounded-full <%= tournament_status_class(tournament) %>">
+              <%= tournament_status_label(tournament) %>
+            </span>
+          </div>
+          <p class="text-sm text-slate-500 mt-1">
+            作成者: <%= tournament.creator.name %> · 参加者 <%= tournament.participants.count %> 人
+          </p>
+        <% end %>
+      </li>
+    <% end %>
+  </ul>
+<% else %>
+  <p class="text-slate-500">まだトーナメントがありません。</p>
+<% end %>
