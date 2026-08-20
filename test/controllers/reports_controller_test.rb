@@ -1,0 +1,78 @@
+require "test_helper"
+
+class ReportsControllerTest < ActionDispatch::IntegrationTest
+  setup do
+    @admin = User.create!(name: "admin", email_address: "rc-admin@example.com", password: "password123", admin: true)
+    @tournament = @admin.tournaments.create!(name: "RC", status: "draft")
+
+    @user1 = User.create!(name: "p1", email_address: "rc-p1@example.com", password: "password123")
+    @user2 = User.create!(name: "p2", email_address: "rc-p2@example.com", password: "password123")
+    @outsider_user = User.create!(name: "outsider", email_address: "rc-outsider@example.com", password: "password123")
+
+    @tournament.participants.create!(user: @user1)
+    @tournament.participants.create!(user: @user2)
+
+    BracketGenerator.new(@tournament).generate!
+    @match = @tournament.matches.find_by(round: 1, position: 0)
+  end
+
+  test "a player can report the winner of their own match" do
+    sign_in_as @user1
+
+    post match_report_path(@match), params: { chosen_winner_id: @match.player1_id }
+
+    assert_redirected_to tournament_path(@tournament, view: "mine")
+    @match.reload
+    assert_not @match.completed?
+    assert_equal @match.player1_id, @match.report_by(@match.player1).chosen_winner_id
+  end
+
+  test "a user who is not a participant of the tournament cannot report" do
+    sign_in_as @outsider_user
+
+    assert_no_difference "Report.count" do
+      post match_report_path(@match), params: { chosen_winner_id: @match.player1_id }
+    end
+
+    assert_redirected_to @tournament
+    follow_redirect!
+    assert_match(/参加者ではありません/, flash[:alert].to_s)
+  end
+
+  test "a participant cannot report on someone else's match" do
+    other_user1 = User.create!(name: "op1", email_address: "rc-op1@example.com", password: "password123")
+    other_user2 = User.create!(name: "op2", email_address: "rc-op2@example.com", password: "password123")
+    other_tournament = @admin.tournaments.create!(name: "RC-other", status: "draft")
+    other_tournament.participants.create!(user: other_user1)
+    other_tournament.participants.create!(user: other_user2)
+    BracketGenerator.new(other_tournament).generate!
+    other_match = other_tournament.matches.find_by(round: 1, position: 0)
+
+    sign_in_as @user1
+
+    assert_no_difference "Report.count" do
+      post match_report_path(other_match), params: { chosen_winner_id: other_match.player1_id }
+    end
+
+    assert_redirected_to other_tournament
+  end
+
+  test "both players reporting the same winner confirms the match" do
+    sign_in_as @user1
+    post match_report_path(@match), params: { chosen_winner_id: @match.player1_id }
+
+    sign_out
+    sign_in_as @user2
+    post match_report_path(@match), params: { chosen_winner_id: @match.player1_id }
+
+    @match.reload
+    assert @match.completed?
+    assert_equal @match.player1, @match.winner
+  end
+
+  test "requires authentication" do
+    post match_report_path(@match), params: { chosen_winner_id: @match.player1_id }
+
+    assert_redirected_to new_session_path
+  end
+end

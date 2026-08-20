@@ -1,0 +1,81 @@
+<% participant = tournament_participant(tournament, viewing_user) %>
+<% next_match = participant&.next_match %>
+
+<div class="my-match-card">
+  <h2 class="my-match-card__title">あなたの次の対戦</h2>
+
+  <% if participant.nil? %>
+    <p class="my-match-card__message">このトーナメントの参加者ではありません。全体表示で進行を確認できます。</p>
+
+  <% elsif participant.champion? %>
+    <div class="my-match-card__result my-match-card__result--win">
+      <svg class="my-match-card__crown" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M2 19h20v2H2v-2zm2-8l3.5 4.5 4.5-6 4.5 6L20 11l-1.5 8H5.5L4 11zm4.2-6.3L12 6.5l3.8-1.8-1 4.3L12 7.5 9.2 8.5l-1-4.3z"/>
+      </svg>
+      <p class="my-match-card__headline">優勝おめでとうございます！</p>
+    </div>
+
+  <% elsif participant.eliminated? %>
+    <div class="my-match-card__result my-match-card__result--lose">
+      <p class="my-match-card__headline">敗退しました</p>
+      <p class="my-match-card__sub">お疲れさまでした。全体表示で結果を確認できます。</p>
+    </div>
+
+  <% elsif participant.waiting_first_round? %>
+    <div class="my-match-card__waiting">
+      <p class="my-match-card__headline">第1回戦待機中</p>
+      <p class="my-match-card__sub">第1回戦の他の試合が終わると、あなたの対戦が決まります。</p>
+    </div>
+
+  <% elsif next_match.nil? %>
+    <p class="my-match-card__message">現在、あなたの対戦予定はありません。</p>
+
+  <% elsif next_match.playable? %>
+    <% opponent = participant.opponent_in(next_match) %>
+    <p class="my-match-card__round-label"><%= next_match.personal_round_label(participant) %></p>
+    <div class="my-match-card__versus">
+      <div class="my-match-card__player my-match-card__player--me">
+        <%= participant.display_name %>
+        <span class="my-match-card__you">あなた</span>
+      </div>
+      <div class="my-match-card__vs">VS</div>
+      <div class="my-match-card__player">
+        <%= opponent&.display_name || "—" %>
+      </div>
+    </div>
+
+    <% if bracket_can_vote?(next_match, participant, viewing_user) %>
+      <% my_report = next_match.report_by(participant) %>
+      <% opponent_report = next_match.report_by(opponent) %>
+
+      <p class="my-match-card__action-hint">勝った方を選んで報告してください（両者の報告が一致すると確定します）</p>
+      <div class="my-match-card__actions">
+        <% [ next_match.player1, next_match.player2 ].each do |p| %>
+          <%= button_to p.display_name,
+                match_report_path(next_match),
+                method: :post,
+                params: { chosen_winner_id: p.id },
+                class: "my-match-card__btn #{'my-match-card__btn--me' if p.user_id == viewing_user.id} #{'my-match-card__btn--selected' if my_report&.chosen_winner_id == p.id}" %>
+        <% end %>
+      </div>
+
+      <% if my_report && opponent_report.nil? %>
+        <p class="my-match-card__sub mt-2">あなたの報告: <strong><%= my_report.chosen_winner.display_name %></strong>（相手の報告を待っています）</p>
+      <% elsif my_report && opponent_report && my_report.chosen_winner_id != opponent_report.chosen_winner_id %>
+        <p class="my-match-card__sub mt-2 text-red-600">あなたと相手の報告が食い違っています。確認してもう一度選んでください。</p>
+      <% end %>
+    <% end %>
+
+  <% else %>
+    <% opponent = participant.opponent_in(next_match) %>
+    <p class="my-match-card__round-label"><%= next_match.personal_round_label(participant) if next_match %></p>
+    <div class="my-match-card__waiting">
+      <p class="my-match-card__headline">対戦相手を待っています</p>
+      <% if opponent %>
+        <p class="my-match-card__sub">次の対戦相手: <strong><%= opponent.display_name %></strong></p>
+      <% else %>
+        <p class="my-match-card__sub">前の試合の結果を待っています</p>
+      <% end %>
+    </div>
+  <% end %>
+</div>

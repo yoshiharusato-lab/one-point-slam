@@ -1,0 +1,89 @@
+<% tree = BracketTreeSvg.new(tournament) %>
+<% champion = tournament.champion %>
+<% my_participant = viewing_user ? tournament.participants.find_by(user: viewing_user) : nil %>
+
+<div class="tree-bracket">
+  <div class="tree-bracket__canvas"
+       style="--slots: <%= tree.entry_slots.size %>; --slot-width: <%= tree.slot_width %>px;">
+    <svg class="tree-bracket__svg"
+         viewBox="0 0 <%= tree.width %> <%= tree.height %>"
+         preserveAspectRatio="xMidYMid meet"
+         aria-hidden="true">
+      <% tree.structure_segments.each do |segment| %>
+        <path d="<%= segment.d %>" class="tree-bracket__path tree-bracket__path--structure" />
+      <% end %>
+      <% tree.winner_segments.each do |segment| %>
+        <path d="<%= segment.d %>" class="tree-bracket__path tree-bracket__path--win" />
+      <% end %>
+    </svg>
+
+    <div class="tree-bracket__crown">
+      <% if champion %>
+        <div class="tree-bracket__crown-name"><%= champion.display_name %></div>
+      <% end %>
+      <svg class="tree-bracket__crown-icon <%= 'tree-bracket__crown-icon--dim' unless champion %>" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M2 19h20v2H2v-2zm2-8l3.5 4.5 4.5-6 4.5 6L20 11l-1.5 8H5.5L4 11zm4.2-6.3L12 6.5l3.8-1.8-1 4.3L12 7.5 9.2 8.5l-1-4.3z"/>
+      </svg>
+    </div>
+
+    <div class="tree-bracket__names">
+      <% tree.entry_slots.each do |entry| %>
+        <% participant = entry[:participant] %>
+        <% match = entry[:match] %>
+        <% can_vote = bracket_can_vote?(match, participant, viewing_user) %>
+        <% my_report = match&.report_by(my_participant) %>
+        <% badge = bracket_slot_status_badge(participant, tournament) %>
+
+        <div class="<%= bracket_slot_classes(participant, tournament, viewing_user) %>">
+          <div class="tree-bracket__name-wrap">
+            <% if can_vote %>
+              <%= button_to bracket_slot_label(participant),
+                    match_report_path(match),
+                    method: :post,
+                    params: { chosen_winner_id: participant.id },
+                    class: "#{bracket_name_classes(participant, tournament, viewing_user, clickable: true)} #{'tree-bracket__name--selected' if my_report&.chosen_winner_id == participant.id}",
+                    title: "クリックして勝者として報告する" %>
+            <% else %>
+              <span class="<%= bracket_name_classes(participant, tournament, viewing_user) %>">
+                <%= bracket_slot_label(participant) %>
+              </span>
+            <% end %>
+            <% if badge %>
+              <span class="tree-bracket__badge tree-bracket__badge--<%= bracket_slot_status(participant, tournament) %>">
+                <%= badge %>
+              </span>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="tree-bracket__legend">
+    <span class="tree-bracket__legend-item"><span class="tree-bracket__legend-line tree-bracket__legend-line--structure"></span> トーナメント表</span>
+    <span class="tree-bracket__legend-item"><span class="tree-bracket__legend-line tree-bracket__legend-line--win"></span> 勝ち上がり</span>
+    <span class="tree-bracket__legend-item"><span class="tree-bracket__legend-swatch tree-bracket__legend-swatch--won"></span> 勝ち</span>
+    <span class="tree-bracket__legend-item"><span class="tree-bracket__legend-swatch tree-bracket__legend-swatch--lost"></span> 敗退</span>
+    <span class="tree-bracket__legend-item"><span class="tree-bracket__legend-swatch tree-bracket__legend-swatch--playing"></span> 対戦中</span>
+  </div>
+
+  <section class="tree-bracket__progress">
+    <h3 class="tree-bracket__progress-title">勝敗一覧</h3>
+    <ul class="tree-bracket__progress-list">
+      <% tournament.participants.order(:seed).each do |participant| %>
+        <% status = bracket_slot_status(participant, tournament) %>
+        <li class="tree-bracket__progress-item tree-bracket__progress-item--<%= status %>">
+          <span class="tree-bracket__progress-name"><%= participant.display_name %></span>
+          <span class="tree-bracket__progress-badge tree-bracket__progress-badge--<%= status %>">
+            <%= bracket_slot_status_badge(participant, tournament) || "—" %>
+          </span>
+          <span class="tree-bracket__progress-status"><%= bracket_progress_label(participant, tree) %></span>
+        </li>
+      <% end %>
+    </ul>
+  </section>
+
+  <p class="tree-bracket__hint">
+    自分の試合では <span class="tree-bracket__hint-accent">名前をクリック</span> して勝者を報告できます（両者の報告が一致すると確定します）。
+  </p>
+</div>

@@ -1,0 +1,13 @@
+<h1 class="text-3xl font-bold text-slate-800 mb-6">自分の次の試合</h1>
+
+<% if @tournament %>
+  <p class="text-slate-500 mb-4">
+    <%= link_to @tournament.name, tournament_path(@tournament), class: "text-emerald-700 hover:underline font-medium" %>
+  </p>
+  <%= turbo_stream_from [ @tournament, current_user ] %>
+  <div id="my_match">
+    <%= render "tournaments/my_match", tournament: @tournament, viewing_user: current_user %>
+  </div>
+<% else %>
+  <p class="text-slate-500">現在、進行中のトーナメントに参加していません。</p>
+<% end %>
