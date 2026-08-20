@@ -1,0 +1,44 @@
+<div class="mb-6">
+  <%= link_to "← トップへ", root_path, class: "text-slate-500 hover:text-slate-700 text-sm" %>
+</div>
+
+<div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-6">
+  <div>
+    <h1 class="text-3xl font-bold text-slate-800"><%= @tournament.name %></h1>
+    <p class="text-slate-500 mt-1">作成者: <%= @tournament.creator.name %></p>
+  </div>
+
+  <div id="tournament_status">
+    <%= render "tournaments/status", tournament: @tournament %>
+  </div>
+</div>
+
+<% if @tournament.draft? && current_user&.admin? %>
+  <div class="bg-amber-50 border border-amber-200 rounded-xl p-6 mb-8">
+    <h2 class="font-semibold text-amber-900 mb-2">準備中 — 開始タイミングを選んでください</h2>
+    <p class="text-amber-800 text-sm mb-4">
+      参加者 <%= @tournament.participants.count %> 人が登録されています。
+      準備ができたら「トーナメントを開始」ボタンを押してください。
+    </p>
+    <div class="flex flex-wrap gap-3">
+      <%= button_to "トーナメントを開始", start_tournament_path(@tournament), method: :post, class: "px-5 py-2.5 bg-emerald-600 text-white rounded-lg hover:bg-emerald-500 font-medium", data: { turbo_confirm: "トーナメントを開始しますか？対戦表が生成されます。" } %>
+      <%= link_to "参加者を編集", edit_tournament_path(@tournament), class: "px-5 py-2.5 border border-slate-300 rounded-lg hover:bg-white font-medium" %>
+    </div>
+  </div>
+
+  <section class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm mb-8">
+    <h2 class="text-lg font-semibold text-slate-800 mb-4">登録参加者</h2>
+    <ul class="grid sm:grid-cols-2 gap-2">
+      <% @tournament.participants.includes(:user).each do |participant| %>
+        <li class="px-3 py-2 bg-slate-50 rounded-lg text-slate-700">
+          <%= participant.display_name %>
+          <span class="text-xs text-slate-400"><%= participant.user.email_address %></span>
+        </li>
+      <% end %>
+    </ul>
+  </section>
+<% end %>
+
+<% unless @tournament.draft? %>
+  <%= render "tournaments/active_tournament" %>
+<% end %>

@@ -1,0 +1,17 @@
+<h1 class="text-3xl font-bold text-slate-800 mb-6">ユーザー一覧</h1>
+
+<section class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+  <% if @users.any? %>
+    <ul class="grid sm:grid-cols-2 gap-2">
+      <% @users.each do |user| %>
+        <li>
+          <%= link_to user_path(user), class: "block px-3 py-2 bg-slate-50 rounded-lg hover:bg-emerald-50 transition" do %>
+            <span class="font-medium text-slate-800"><%= user.name %></span>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+  <% else %>
+    <p class="text-slate-500">ユーザーがいません。</p>
+  <% end %>
+</section>

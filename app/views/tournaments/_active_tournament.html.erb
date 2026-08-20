@@ -1,0 +1,25 @@
+<% unless @tournament.draft? %>
+  <%= turbo_stream_from @tournament %>
+  <% if @participant %>
+    <%= turbo_stream_from [ @tournament, current_user ] %>
+  <% end %>
+
+  <div class="tournament-views mb-4">
+    <%= link_to "自分の対戦",
+          tournament_path(@tournament, view: "mine"),
+          class: "tournament-views__tab #{'tournament-views__tab--active' if @view == 'mine'}" %>
+    <%= link_to "トーナメント全体",
+          tournament_path(@tournament, view: "full"),
+          class: "tournament-views__tab #{'tournament-views__tab--active' if @view == 'full'}" %>
+  </div>
+
+  <% if @view == "mine" %>
+    <div id="my_match">
+      <%= render "tournaments/my_match", tournament: @tournament, viewing_user: current_user %>
+    </div>
+  <% else %>
+    <div id="bracket">
+      <%= render "tournaments/bracket", tournament: @tournament, viewing_user: current_user %>
+    </div>
+  <% end %>
+<% end %>

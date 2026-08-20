@@ -1,0 +1,35 @@
+<div class="mb-6">
+  <%= link_to "← ユーザー一覧へ", users_path, class: "text-slate-500 hover:text-slate-700 text-sm" %>
+</div>
+
+<div class="flex items-center gap-3 mb-8">
+  <h1 class="text-3xl font-bold text-slate-800"><%= @user.name %></h1>
+  <% if @user.admin? %>
+    <span class="px-2 py-0.5 bg-amber-100 text-amber-800 rounded-full text-xs">管理者</span>
+  <% end %>
+</div>
+
+<section class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+  <h2 class="text-lg font-semibold text-slate-800 mb-4">これまでの戦績</h2>
+
+  <% if @participations.any? %>
+    <ul class="space-y-3">
+      <% @participations.each do |participant| %>
+        <% tournament = participant.tournament %>
+        <li class="p-3 rounded-lg border border-slate-100">
+          <div class="flex items-center justify-between">
+            <%= link_to tournament.name, tournament_path(tournament), class: "font-medium text-emerald-700 hover:underline" %>
+            <span class="text-xs px-2 py-0.5 rounded-full <%= tournament_status_class(tournament) %>">
+              <%= tournament_status_label(tournament) %>
+            </span>
+          </div>
+          <p class="text-sm text-slate-500 mt-1">
+            <%= PersonalRoundLabel.progress_label(participant) %>
+          </p>
+        </li>
+      <% end %>
+    </ul>
+  <% else %>
+    <p class="text-slate-500">まだトーナメントに参加していません。</p>
+  <% end %>
+</section>

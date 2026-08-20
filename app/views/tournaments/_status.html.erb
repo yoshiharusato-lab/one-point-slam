@@ -1,0 +1,13 @@
+<span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium <%= tournament_status_class(tournament) %>">
+  <%= tournament_status_label(tournament) %>
+</span>
+
+<% if tournament.completed? && tournament.champion %>
+  <p class="mt-2 text-lg font-bold text-emerald-700">
+    優勝: <%= tournament.champion.display_name %>
+  </p>
+<% elsif tournament.active? %>
+  <p class="mt-2 text-sm text-slate-500">
+    参加者 <%= tournament.participants.count %> 人<% if tournament.started_at %> · 開始 <%= tournament.started_at.strftime("%Y/%m/%d %H:%M") %><% end %>
+  </p>
+<% end %>
