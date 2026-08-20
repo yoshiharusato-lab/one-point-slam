@@ -26,23 +26,13 @@ class Participant < ApplicationRecord
   def next_match
     return nil if champion? || eliminated?
 
-    playable = matches.find(&:playable?)
-    return playable if playable
-
-    pending = matches.find { |match| match.status == "pending" && (match.player1_id == id || match.player2_id == id) }
-    return pending if pending
-
-    first_round_bye? ? nil : matches.find { |match| match.status == "pending" }
+    matches.find { |match| !match.completed? }
   end
 
+  # 1回戦をシード(不戦勝)で免除され、まだ対戦相手(1回戦の勝者)が決まっていない状態。
   def waiting_first_round?
-    return false unless CompactBracket.waiting_participant?(tournament, self)
-
-    matches.none?
-  end
-
-  def first_round_bye?
-    waiting_first_round?
+    first_match = matches.first
+    first_match.present? && first_match.round > 1 && !first_match.playable?
   end
 
   def opponent_in(match)

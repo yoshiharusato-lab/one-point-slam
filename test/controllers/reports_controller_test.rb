@@ -18,13 +18,14 @@ class ReportsControllerTest < ActionDispatch::IntegrationTest
 
   test "a player can report the winner of their own match" do
     sign_in_as @user1
+    reporter = @tournament.participants.find_by(user: @user1)
 
     post match_report_path(@match), params: { chosen_winner_id: @match.player1_id }
 
     assert_redirected_to tournament_path(@tournament, view: "mine")
     @match.reload
     assert_not @match.completed?
-    assert_equal @match.player1_id, @match.report_by(@match.player1).chosen_winner_id
+    assert_equal @match.player1_id, @match.report_by(reporter).chosen_winner_id
   end
 
   test "a user who is not a participant of the tournament cannot report" do

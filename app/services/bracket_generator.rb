@@ -1,35 +1,27 @@
 class BracketGenerator
+  # n 以上になる最小の2の累乗を返す(1回戦の枠数)。
   def self.bracket_slots(participant_count)
     return 2 if participant_count <= 2
 
-    if participant_count.odd?
-      participant_count
-    else
-      2**(Math.log2(participant_count).ceil)
-    end
+    slots = 1
+    slots <<= 1 while slots < participant_count
+    slots
   end
 
   def self.bracket_size(participant_count)
     bracket_slots(participant_count)
   end
 
+  # シード(不戦勝)になる人数。2の累乗ちょうどならゼロ。
   def self.bye_count(participant_count)
     return 0 if participant_count <= 1
-    return 0 if CompactBracket.compact_odd?(participant_count)
 
-    if participant_count.odd?
-      1
-    else
-      bracket_slots(participant_count) - participant_count
-    end
+    bracket_slots(participant_count) - participant_count
   end
 
   def self.round_match_counts(participant_count)
-    CompactBracket.round_match_counts(participant_count)
-  end
-
-  def self.standard_round_match_counts(participant_count)
     return [] if participant_count < 2
+    return [ 1 ] if participant_count == 2
 
     counts = []
     in_competition = participant_count
@@ -82,9 +74,7 @@ class BracketGenerator
         end
       end
 
-      if CompactBracket.compact_odd?(shuffled.size)
-        assign_compact_odd_first_round!(shuffled.size)
-      elsif initial_byes.positive?
+      if initial_byes.positive?
         # round_match_counts は「シード(不戦勝)の人は1回戦を戦わず、そのまま2回戦の枠で待つ」
         # という前提でラウンドごとの試合数を割り出しているため、1回戦の試合記録数は
         # (参加者数 - シード数) / 2 しか無い。1回戦には実際に対戦するメンバーだけを割り当て、
@@ -107,7 +97,7 @@ class BracketGenerator
       end
 
       if @tournament.matches.where(round: 1).all?(&:completed?)
-        CompactBracket.on_round_complete(@tournament, 1)
+        BracketAdvancer.on_round_complete(@tournament, 1)
       end
 
       @tournament.update!(status: "active", started_at: Time.current)
@@ -115,18 +105,6 @@ class BracketGenerator
   end
 
   private
-
-  def assign_compact_odd_first_round!(participant_count)
-    ordered = @tournament.participants.order(:seed).to_a
-    r1_count = (participant_count - 1) / 2
-    first_round_matches = @tournament.matches.where(round: 1).order(:position)
-
-    (0...r1_count).each do |pos|
-      player1 = ordered[pos * 2]
-      player2 = ordered[pos * 2 + 1]
-      assign_first_round_match(first_round_matches[pos], player1, player2)
-    end
-  end
 
   def assign_first_round_match(match, player1, player2)
     if player1.present? && player2.present?

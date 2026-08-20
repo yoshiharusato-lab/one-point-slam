@@ -51,7 +51,12 @@ class BracketAdvancer
       match = matches[index]
       next unless match
 
-      match.update!(player1: player1, player2: player2, status: "ready")
+      if player2
+        match.update!(player1: player1, player2: player2, status: "ready")
+      else
+        # ペアを組む相手がまだいない(奇数人余り)。相手が決まるまで枠だけ確保して待つ。
+        match.update!(player1: player1, status: "pending")
+      end
     end
 
     byes
