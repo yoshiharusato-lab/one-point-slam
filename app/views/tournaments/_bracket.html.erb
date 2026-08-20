@@ -94,22 +94,6 @@
   </div>
 </div>
 
-<section class="tree-bracket__progress">
-  <h3 class="tree-bracket__progress-title">勝敗一覧</h3>
-  <ul class="tree-bracket__progress-list">
-    <% tournament.participants.order(:seed).each do |participant| %>
-      <% status = bracket_slot_status(participant, tournament) %>
-      <li class="tree-bracket__progress-item tree-bracket__progress-item--<%= status %>">
-        <span class="tree-bracket__progress-name"><%= participant.display_name %></span>
-        <span class="tree-bracket__progress-badge tree-bracket__progress-badge--<%= status %>">
-          <%= bracket_slot_status_badge(participant, tournament) || "—" %>
-        </span>
-        <span class="tree-bracket__progress-status"><%= bracket_progress_label(participant) %></span>
-      </li>
-    <% end %>
-  </ul>
-</section>
-
 <p class="tree-bracket__hint">
   自分の試合では <span class="tree-bracket__hint-accent">名前をクリック</span> して勝者を報告できます（両者の報告が一致すると確定します）。
 </p>
