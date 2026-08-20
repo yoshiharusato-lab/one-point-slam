@@ -1,12 +1,5 @@
 class HomeController < ApplicationController
-  allow_unauthenticated_access only: %i[ index about ]
-
-  def index
-    if authenticated?
-      @tournaments = Tournament.recent
-      @my_tournaments = current_user.participants.includes(:tournament).map(&:tournament).uniq
-    end
-  end
+  allow_unauthenticated_access only: :about
 
   def about
   end
