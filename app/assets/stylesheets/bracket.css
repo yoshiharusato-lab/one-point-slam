@@ -200,7 +200,9 @@ button.player {
 }
 
 .player.is-selected {
-  background: #fff5f5;
+  background: #c00000;
+  border-color: #c00000;
+  color: #fff;
 }
 
 .win-mark {
@@ -445,9 +447,9 @@ button.player {
 }
 
 .my-match-card__btn--selected {
-  border-color: #d97706;
-  background: #fffbeb;
-  box-shadow: inset 0 0 0 1px #d97706;
+  border-color: #c00000;
+  background: #c00000;
+  color: #fff;
 }
 
 .my-match-card__waiting,

@@ -21,31 +21,30 @@
 
   <body class="bg-slate-50 min-h-screen">
     <header class="fixed top-0 inset-x-0 z-50 bg-white border-b border-slate-200 shadow-sm">
-      <nav class="container mx-auto px-5 py-3 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm">
-        <%= link_to "1 POINT SLAM", root_path, class: "text-lg font-bold text-emerald-700 hover:text-emerald-600 mr-2" %>
+      <nav class="container mx-auto px-5 py-3 flex items-center gap-5 overflow-x-auto text-sm">
+        <%= link_to "1 POINT SLAM", about_path, class: "text-lg font-bold text-emerald-700 hover:text-emerald-600 mr-2 whitespace-nowrap" %>
 
         <% if authenticated? %>
-          <%= link_to "トーナメント全体", tournaments_path, class: "text-slate-600 hover:text-slate-900" %>
-          <%= link_to "自分の次の試合", my_match_path, class: "text-slate-600 hover:text-slate-900" %>
-          <%= link_to "ユーザー一覧", users_path, class: "text-slate-600 hover:text-slate-900" %>
-          <%= link_to "プロフィール", user_path(current_user), class: "text-slate-600 hover:text-slate-900" %>
+          <%= link_to "トーナメント全体", tournaments_path, class: "text-slate-600 hover:text-slate-900 whitespace-nowrap" %>
+          <%= link_to "自分の次の試合", my_match_path, class: "text-slate-600 hover:text-slate-900 whitespace-nowrap" %>
+          <%= link_to "ユーザー一覧", users_path, class: "text-slate-600 hover:text-slate-900 whitespace-nowrap" %>
           <% if current_user.admin? %>
-            <%= link_to "トーナメント作成", new_tournament_path, class: "px-3 py-1.5 bg-emerald-600 text-white rounded-lg hover:bg-emerald-500 font-medium" %>
+            <%= link_to "トーナメント作成", new_tournament_path, class: "px-3 py-1.5 bg-emerald-600 text-white rounded-lg hover:bg-emerald-500 font-medium whitespace-nowrap" %>
           <% end %>
         <% else %>
-          <%= link_to "1 POINT SLAMの説明", about_path, class: "text-slate-600 hover:text-slate-900" %>
-          <%= link_to "新規登録", new_registration_path, class: "text-slate-600 hover:text-slate-900" %>
+          <%= link_to "1 POINT SLAMの説明", about_path, class: "text-slate-600 hover:text-slate-900 whitespace-nowrap" %>
+          <%= link_to "新規登録", new_registration_path, class: "text-slate-600 hover:text-slate-900 whitespace-nowrap" %>
         <% end %>
 
-        <div class="ml-auto flex items-center gap-3">
+        <div class="ml-auto flex items-center gap-3 whitespace-nowrap">
           <% if authenticated? %>
-            <span class="text-slate-600 hidden sm:inline-flex items-center gap-2">
+            <%= link_to user_path(current_user), class: "text-slate-600 hidden sm:inline-flex items-center gap-2 hover:text-slate-900" do %>
               <%= user_avatar_tag(current_user, css_class: "avatar avatar--sm") %>
               <%= current_user.name %>
               <% if current_user.admin? %>
                 <span class="ml-1 px-2 py-0.5 bg-amber-100 text-amber-800 rounded-full text-xs">管理者</span>
               <% end %>
-            </span>
+            <% end %>
             <%= button_to "ログアウト", session_path, method: :delete, class: "text-slate-500 hover:text-slate-700 underline bg-transparent" %>
           <% else %>
             <%= link_to "ログイン", new_session_path, class: "px-3 py-1.5 bg-emerald-600 text-white rounded-lg hover:bg-emerald-500 font-medium" %>
