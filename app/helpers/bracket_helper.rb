@@ -1,35 +1,4 @@
 module BracketHelper
-  def bracket_slot_label(participant)
-    participant&.display_name || "—"
-  end
-
-  def bracket_slot_status(participant, tournament)
-    return :empty unless participant
-
-    return :champion if participant.champion?
-    return :eliminated if participant.eliminated?
-    return :waiting if participant.waiting_first_round?
-    return :playing if participant.next_match&.playable?
-    return :advanced if participant.advanced?
-
-    :pending
-  end
-
-  def bracket_slot_status_badge(participant, tournament)
-    case bracket_slot_status(participant, tournament)
-    when :champion then "優勝"
-    when :eliminated then "敗"
-    when :waiting then "待機"
-    when :playing then "対戦中"
-    when :advanced then "勝ち"
-    else nil
-    end
-  end
-
-  def bracket_progress_label(participant, tree = nil)
-    PersonalRoundLabel.progress_label(participant)
-  end
-
   def bracket_can_vote?(match, participant, viewing_user)
     match&.playable? && participant.present? && viewing_user && match.involves?(viewing_user)
   end

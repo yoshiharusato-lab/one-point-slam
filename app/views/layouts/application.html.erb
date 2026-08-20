@@ -24,18 +24,17 @@
       <nav class="container mx-auto px-5 py-3 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm">
         <%= link_to "1 POINT SLAM", root_path, class: "text-lg font-bold text-emerald-700 hover:text-emerald-600 mr-2" %>
 
-        <%= link_to "1 POINT SLAMの説明", about_path, class: "text-slate-600 hover:text-slate-900" %>
-
         <% if authenticated? %>
           <%= link_to "トーナメント全体", tournaments_path, class: "text-slate-600 hover:text-slate-900" %>
           <%= link_to "自分の次の試合", my_match_path, class: "text-slate-600 hover:text-slate-900" %>
-          <%= link_to "ユーザーの詳細", user_path(current_user), class: "text-slate-600 hover:text-slate-900" %>
           <%= link_to "ユーザー一覧", users_path, class: "text-slate-600 hover:text-slate-900" %>
+          <%= link_to "自身のプロフィール", user_path(current_user), class: "text-slate-600 hover:text-slate-900" %>
           <% if current_user.admin? %>
             <%= link_to "トーナメント作成", new_tournament_path, class: "px-3 py-1.5 bg-emerald-600 text-white rounded-lg hover:bg-emerald-500 font-medium" %>
           <% end %>
         <% else %>
-          <%= link_to "ユーザー登録", new_registration_path, class: "text-slate-600 hover:text-slate-900" %>
+          <%= link_to "1 POINT SLAMの説明", about_path, class: "text-slate-600 hover:text-slate-900" %>
+          <%= link_to "新規登録", new_registration_path, class: "text-slate-600 hover:text-slate-900" %>
         <% end %>
 
         <div class="ml-auto flex items-center gap-3">
