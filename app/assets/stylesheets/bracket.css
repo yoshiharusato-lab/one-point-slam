@@ -441,11 +441,6 @@ button.player {
   border-color: #059669;
 }
 
-.my-match-card__btn--me {
-  border-color: #059669;
-  background: #ecfdf5;
-}
-
 .my-match-card__btn--selected {
   border-color: #c00000;
   background: #c00000;
