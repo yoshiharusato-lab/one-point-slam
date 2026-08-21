@@ -402,9 +402,9 @@ button.player {
 }
 
 .my-match-card__btn--selected {
-  border-color: #c00000;
-  background: #c00000;
-  color: #fff;
+  border-color: #059669;
+  background: #d1fae5;
+  color: #065f46;
 }
 
 .my-match-card__waiting,
