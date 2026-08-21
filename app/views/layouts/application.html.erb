@@ -41,7 +41,7 @@
             <% end %>
             <%= button_to "ログアウト", session_path, method: :delete, class: "text-slate-500 hover:text-slate-700 bg-transparent" %>
           <% else %>
-            <%= link_to "1 POINT SLAMの説明", about_path, class: nav_link_class(controller_name == "home" && action_name == "about") %>
+            <%= link_to "1 POINT SLAMとは", about_path, class: nav_link_class(controller_name == "home" && action_name == "about") %>
             <%= link_to "新規登録", new_registration_path, class: nav_link_class(controller_name == "registrations") %>
             <%= link_to "ログイン", new_session_path, class: "px-3 py-1.5 bg-emerald-600 text-white rounded-lg hover:bg-emerald-500 font-medium whitespace-nowrap" %>
           <% end %>
@@ -49,7 +49,7 @@
       </nav>
     </header>
 
-    <main class="container mx-auto px-5 py-8 max-w-6xl mt-20">
+    <main class="mx-auto px-5 py-8 max-w-6xl mt-20">
       <% if alert = flash[:alert] %>
         <p class="mb-4 py-2 px-4 bg-red-50 text-red-600 rounded-lg border border-red-100"><%= alert %></p>
       <% end %>
