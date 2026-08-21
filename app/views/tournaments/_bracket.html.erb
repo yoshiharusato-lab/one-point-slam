@@ -1,26 +1,22 @@
 <%
   layout = bracket_left_right_center(tournament)
   champion = tournament.champion
-  my_participant = viewing_user ? tournament.participants.find_by(user: viewing_user) : nil
 
   render_player = lambda do |participant, match|
     state_class = bracket_player_state_class(participant, match)
-    mine_class = viewing_user && participant&.user_id == viewing_user.id ? "is-mine" : ""
 
     if bracket_can_vote?(match, participant, viewing_user)
-      my_report = match.report_by(my_participant)
-      selected_class = my_report&.chosen_winner_id == participant.id ? "is-selected" : ""
       button_to participant.display_name,
         match_report_path(match),
         method: :post,
         params: { chosen_winner_id: participant.id },
         form: { class: "player-form" },
-        class: [ "player", state_class, mine_class, selected_class ].reject(&:blank?).join(" "),
+        class: [ "player", state_class ].reject(&:blank?).join(" "),
         title: "クリックして勝者として報告する"
     elsif participant
       link_to participant.display_name,
         user_path(participant.user),
-        class: [ "player", state_class, mine_class ].reject(&:blank?).join(" ")
+        class: [ "player", state_class ].reject(&:blank?).join(" ")
     else
       content_tag :span, "", class: "player is-empty"
     end

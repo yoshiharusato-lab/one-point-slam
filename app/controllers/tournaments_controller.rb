@@ -9,8 +9,6 @@ class TournamentsController < ApplicationController
   end
 
   def show
-    @participant = @tournament.participants.find_by(user: current_user)
-    @view = params[:view].presence_in(%w[mine full]) || tournament_default_view(@tournament, current_user)
   end
 
   def new

@@ -14,7 +14,7 @@ class ReportsController < ApplicationController
     @match.submit_report!(reporter, chosen_winner)
 
     broadcast_updates
-    redirect_to tournament_path(@match.tournament, view: "mine"), notice: report_notice
+    redirect_to @match.tournament, notice: report_notice
   rescue ArgumentError, ActiveRecord::RecordInvalid => e
     redirect_to (@match&.tournament || root_path), alert: e.message
   end

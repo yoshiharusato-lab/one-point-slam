@@ -19,14 +19,6 @@ module BracketHelper
     tournament.participants.find_by(user: user)
   end
 
-  def tournament_default_view(tournament, user)
-    if user&.admin? || tournament_participant(tournament, user).nil?
-      "full"
-    else
-      "mine"
-    end
-  end
-
   # トーナメント表を左半分・中央(決勝)・右半分に分ける。
   # 各ラウンドの対戦カードを前半/後半で左右に振り分け、決勝だけ中央に置く
   # 左右対称レイアウト(旧tweet_appのブラケット表と同じ組み方)。

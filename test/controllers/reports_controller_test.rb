@@ -22,7 +22,7 @@ class ReportsControllerTest < ActionDispatch::IntegrationTest
 
     post match_report_path(@match), params: { chosen_winner_id: @match.player1_id }
 
-    assert_redirected_to tournament_path(@tournament, view: "mine")
+    assert_redirected_to @tournament
     @match.reload
     assert_not @match.completed?
     assert_equal @match.player1_id, @match.report_by(reporter).chosen_winner_id
