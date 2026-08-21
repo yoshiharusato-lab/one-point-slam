@@ -199,12 +199,6 @@ button.player {
   color: #000;
 }
 
-.player.is-selected {
-  background: #c00000;
-  border-color: #c00000;
-  color: #fff;
-}
-
 .win-mark {
   color: #111;
   font-size: 8px;
@@ -218,11 +212,6 @@ button.player {
 
 .player.is-empty {
   color: #9aa0a6;
-}
-
-.player.is-mine {
-  outline: 2px solid #c00000;
-  outline-offset: 1px;
 }
 
 .tournament-champion-banner {
@@ -302,35 +291,6 @@ button.player {
 .tree-bracket__hint-accent {
   color: #34d399;
   font-weight: 600;
-}
-
-/* タブ切り替え */
-.tournament-views {
-  display: inline-flex;
-  gap: 0.25rem;
-  padding: 0.25rem;
-  background: #f1f5f9;
-  border-radius: 0.75rem;
-}
-
-.tournament-views__tab {
-  padding: 0.5rem 1rem;
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: #64748b;
-  border-radius: 0.5rem;
-  text-decoration: none;
-  transition: background 0.15s, color 0.15s;
-}
-
-.tournament-views__tab:hover {
-  color: #334155;
-}
-
-.tournament-views__tab--active {
-  background: #fff;
-  color: #047857;
-  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
 }
 
 /* 自分の対戦カード */

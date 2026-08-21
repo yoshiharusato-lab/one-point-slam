@@ -42,12 +42,6 @@ class PagesSmokeTest < ActionDispatch::IntegrationTest
     get tournament_path(@tournament)
     assert_response :success
 
-    get tournament_path(@tournament, view: "mine")
-    assert_response :success
-
-    get tournament_path(@tournament, view: "full")
-    assert_response :success
-
     get my_match_path
     assert_response :success
 

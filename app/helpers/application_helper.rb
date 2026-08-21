@@ -17,6 +17,11 @@ module ApplicationHelper
     end
   end
 
+  # 今開いているページに対応するヘッダーリンクだけ見た目を変える。
+  def nav_link_class(active)
+    active ? "text-emerald-700 font-semibold whitespace-nowrap" : "text-slate-600 hover:text-slate-900 whitespace-nowrap"
+  end
+
   # avatar が未設定の場合は共通のデフォルト画像を表示する。
   # (この環境には画像変換ライブラリ(libvips等)が無いため、variantでのリサイズはせず
   #  元画像をそのまま出し、表示サイズはCSS側の width/height/object-fit で揃えている)

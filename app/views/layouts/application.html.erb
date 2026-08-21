@@ -26,13 +26,13 @@
 
         <div class="flex items-center gap-6 whitespace-nowrap">
           <% if authenticated? %>
-            <%= link_to "トーナメント全体", tournaments_path, class: "text-slate-600 hover:text-slate-900" %>
-            <%= link_to "自分の次の試合", my_match_path, class: "text-slate-600 hover:text-slate-900" %>
-            <%= link_to "ユーザー一覧", users_path, class: "text-slate-600 hover:text-slate-900" %>
+            <%= link_to "トーナメント全体", tournaments_path, class: nav_link_class(controller_name == "tournaments") %>
+            <%= link_to "自分の次の試合", my_match_path, class: nav_link_class(controller_name == "home" && action_name == "my_match") %>
+            <%= link_to "ユーザー一覧", users_path, class: nav_link_class(controller_name == "users" && action_name == "index") %>
             <% if current_user.admin? %>
-              <%= link_to "トーナメント作成", new_tournament_path, class: "px-3 py-1.5 bg-emerald-600 text-white rounded-lg hover:bg-emerald-500 font-medium" %>
+              <%= link_to "トーナメント作成", new_tournament_path, class: "px-3 py-1.5 bg-emerald-600 text-white rounded-lg hover:bg-emerald-500 font-medium whitespace-nowrap" %>
             <% end %>
-            <%= link_to user_path(current_user), class: "text-slate-600 hidden sm:inline-flex items-center gap-2 hover:text-slate-900" do %>
+            <%= link_to user_path(current_user), class: "#{nav_link_class(controller_name == 'users' && action_name == 'show' && params[:id] == current_user.id.to_s)} hidden sm:inline-flex items-center gap-2" do %>
               <%= user_avatar_tag(current_user, css_class: "avatar avatar--sm") %>
               <%= current_user.name %>
               <% if current_user.admin? %>
@@ -41,9 +41,9 @@
             <% end %>
             <%= button_to "ログアウト", session_path, method: :delete, class: "text-slate-500 hover:text-slate-700 underline bg-transparent" %>
           <% else %>
-            <%= link_to "1 POINT SLAMの説明", about_path, class: "text-slate-600 hover:text-slate-900" %>
-            <%= link_to "新規登録", new_registration_path, class: "text-slate-600 hover:text-slate-900" %>
-            <%= link_to "ログイン", new_session_path, class: "px-3 py-1.5 bg-emerald-600 text-white rounded-lg hover:bg-emerald-500 font-medium" %>
+            <%= link_to "1 POINT SLAMの説明", about_path, class: nav_link_class(controller_name == "home" && action_name == "about") %>
+            <%= link_to "新規登録", new_registration_path, class: nav_link_class(controller_name == "registrations") %>
+            <%= link_to "ログイン", new_session_path, class: "px-3 py-1.5 bg-emerald-600 text-white rounded-lg hover:bg-emerald-500 font-medium whitespace-nowrap" %>
           <% end %>
         </div>
       </nav>
