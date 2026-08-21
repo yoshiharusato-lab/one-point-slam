@@ -1,6 +1,8 @@
-<div class="mb-6">
-  <%= link_to "← ユーザー一覧へ", users_path, class: "text-slate-500 hover:text-slate-700 text-sm" %>
-</div>
+<% unless @user == current_user %>
+  <div class="mb-6">
+    <%= link_to "← ユーザー一覧へ", users_path, class: "text-slate-500 hover:text-slate-700 text-sm" %>
+  </div>
+<% end %>
 
 <div class="flex items-center gap-4 mb-8">
   <%= user_avatar_tag(@user, css_class: "avatar avatar--lg") %>
