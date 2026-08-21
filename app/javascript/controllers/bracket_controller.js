@@ -82,15 +82,19 @@ export default class extends Controller {
     matchEl.style.height = `${bottomCenter - topCenter + BOX_H}px`
   }
 
-  // その側の最終ラウンド(=決勝に一番近いラウンド)の勝者が出てくるY
-  lastRoundMergeY(layout, offset) {
+  // その側の最終ラウンド(=決勝に一番近いラウンド)の勝者が出てくるY(オフセット適用前の生の値)
+  rawLastRoundMergeY(layout) {
     const keys = Object.keys(layout.boxYByRound).map(Number)
     if (!keys.length) return null
     const pairs = layout.boxYByRound[Math.max(...keys)]
     if (!pairs || !pairs.length) return null
-    return (this.mergeY(pairs[0]) + this.mergeY(pairs[pairs.length - 1])) / 2 + offset
+    return (this.mergeY(pairs[0]) + this.mergeY(pairs[pairs.length - 1])) / 2
   }
 
+  // 決勝の位置を先に固定し(全体の高さの中央)、左右それぞれのオフセットは
+  // 「その側の最終ラウンドの中心が、決勝の対応する枠にぴったり合う」ように逆算する。
+  // (以前は決勝側を左右の平均位置に置いていたため、どちらの準決勝からの線も
+  //  決勝の枠の中心からズレることがあった)
   positionAllRoundMatches() {
     const left = this.getRounds("left")
     const right = this.getRounds("right")
@@ -100,10 +104,34 @@ export default class extends Controller {
 
     const leftLayout = this.layoutSide(left)
     const rightLayout = this.layoutSide(right)
-    const totalHeight = Math.max(leftLayout.height, rightLayout.height, BOX_H * 2 + SLOT_GAP)
+    let totalHeight = Math.max(leftLayout.height, rightLayout.height, BOX_H * 2 + SLOT_GAP)
 
-    const leftOffset = (totalHeight - leftLayout.height) / 2
-    const rightOffset = (totalHeight - rightLayout.height) / 2
+    const half = (BOX_H + SLOT_GAP) / 2
+    let finalCy = totalHeight / 2
+    let leftTarget = finalCy - half
+    let rightTarget = finalCy + half
+
+    const rawLeftMerge = this.rawLastRoundMergeY(leftLayout)
+    const rawRightMerge = this.rawLastRoundMergeY(rightLayout)
+
+    let leftOffset = rawLeftMerge !== null ? leftTarget - rawLeftMerge : (totalHeight - leftLayout.height) / 2
+    let rightOffset = rawRightMerge !== null ? rightTarget - rawRightMerge : (totalHeight - rightLayout.height) / 2
+
+    // 決勝を固定したまま各サイドをずらすと、どちらかの側が上下にはみ出すことがあるので、
+    // はみ出す分だけ全体(両サイド+決勝)を平行移動して高さを広げる。
+    const extentTop = Math.min(0, leftOffset, rightOffset, leftTarget - BOX_H / 2)
+    const extentBottom = Math.max(
+      totalHeight,
+      leftOffset + leftLayout.height,
+      rightOffset + rightLayout.height,
+      rightTarget + BOX_H / 2
+    )
+    const shift = -extentTop
+    totalHeight = extentBottom - extentTop
+    leftOffset += shift
+    rightOffset += shift
+    leftTarget += shift
+    rightTarget += shift
 
     const applySide = (rounds, layout, offset) => {
       rounds.forEach((roundEl) => {
@@ -128,18 +156,7 @@ export default class extends Controller {
       const m = centerRound.querySelector(".matches > .match")
       const matchesEl = centerRound.querySelector(".matches")
       if (matchesEl) matchesEl.style.height = `${totalHeight}px`
-
-      if (m) {
-        const candidates = []
-        const leftMerge = this.lastRoundMergeY(leftLayout, leftOffset)
-        const rightMerge = this.lastRoundMergeY(rightLayout, rightOffset)
-        if (leftMerge !== null) candidates.push(leftMerge)
-        if (rightMerge !== null) candidates.push(rightMerge)
-
-        const cy = candidates.length ? candidates.reduce((a, b) => a + b, 0) / candidates.length : totalHeight / 2
-        const half = (BOX_H + SLOT_GAP) / 2
-        this.placeMatch(m, cy - half, cy + half)
-      }
+      if (m) this.placeMatch(m, leftTarget, rightTarget)
     }
 
     return totalHeight
