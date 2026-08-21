@@ -1,18 +1,20 @@
 <style>
+  body.about-page {
+    background-color: #0a1220;
+    background-image: url("/images/about_background.png");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+  }
   .ops-container {
     position: relative;
     font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
     color: #222;
     width: 100%;
-    background-color: #0a1220;
-    background-image: url("<%= image_url('background.png') %>");
-    background-size: contain;
-    background-position: center;
-    background-repeat: no-repeat;
     padding: 40px 0;
     min-height: calc(100vh - 64px);
     margin: -32px -20px;
-    border-radius: 12px;
   }
   .ops-inner {
     max-width: 680px;
