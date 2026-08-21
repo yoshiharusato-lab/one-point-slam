@@ -71,6 +71,16 @@ class ReportsControllerTest < ActionDispatch::IntegrationTest
     assert_equal @match.player1, @match.winner
   end
 
+  test "reporting from the my_match page redirects back there instead of the tournament" do
+    sign_in_as @user1
+
+    post match_report_path(@match),
+      params: { chosen_winner_id: @match.player1_id },
+      headers: { "HTTP_REFERER" => my_match_url }
+
+    assert_redirected_to my_match_url
+  end
+
   test "requires authentication" do
     post match_report_path(@match), params: { chosen_winner_id: @match.player1_id }
 
