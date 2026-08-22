@@ -249,6 +249,14 @@ button.player {
   letter-spacing: 2px;
 }
 
+.champion-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #c00000;
+}
+
 .champion-player-name {
   font-size: 30px;
   font-weight: 700;
