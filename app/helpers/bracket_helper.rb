@@ -27,7 +27,10 @@ module BracketHelper
     empty_final = { label: bracket_round_title(1, 1), matches: [] }
     return { left: [], right: [], final: empty_final } if total_rounds.zero?
 
-    matches_by_round = tournament.matches.includes(:player1, :player2, :winner).ordered.group_by(&:round)
+    avatar_include = { user: { avatar_attachment: :blob } }
+    matches_by_round = tournament.matches
+      .includes(player1: avatar_include, player2: avatar_include, winner: avatar_include)
+      .ordered.group_by(&:round)
 
     rounds = (1..total_rounds).map do |round|
       { label: bracket_round_title(round, total_rounds), matches: (matches_by_round[round] || []).sort_by(&:position) }
