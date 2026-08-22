@@ -31,11 +31,13 @@
     <ul class="grid sm:grid-cols-2 gap-2">
       <% @tournament.participants.includes(user: { avatar_attachment: :blob }).each do |participant| %>
         <li class="flex items-center gap-2 px-3 py-2 bg-slate-50 rounded-lg text-slate-700">
-          <%= user_avatar_tag(participant.user, css_class: "avatar avatar--sm") %>
-          <span>
-            <%= participant.display_name %>
-            <span class="text-xs text-slate-400"><%= participant.user.email_address %></span>
-          </span>
+          <%= link_to user_path(participant.user), class: "flex items-center gap-2 hover:text-emerald-700" do %>
+            <%= user_avatar_tag(participant.user, css_class: "avatar avatar--sm") %>
+            <span>
+              <%= participant.display_name %>
+              <span class="text-xs text-slate-400"><%= participant.user.email_address %></span>
+            </span>
+          <% end %>
         </li>
       <% end %>
     </ul>
