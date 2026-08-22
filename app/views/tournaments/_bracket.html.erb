@@ -4,19 +4,25 @@
 
   render_player = lambda do |participant, match|
     state_class = bracket_player_state_class(participant, match)
+    player_content = lambda do
+      safe_join([
+        user_avatar_tag(participant.user, css_class: "player-avatar"),
+        content_tag(:span, participant.display_name, class: "player-name")
+      ])
+    end
 
     if bracket_can_vote?(match, participant, viewing_user)
-      button_to participant.display_name,
-        match_report_path(match),
+      button_to match_report_path(match),
         method: :post,
         params: { chosen_winner_id: participant.id },
         form: { class: "player-form" },
         class: [ "player", state_class ].reject(&:blank?).join(" "),
-        title: "クリックして勝者として報告する"
+        title: "クリックして勝者として報告する",
+        &player_content
     elsif participant
-      link_to participant.display_name,
-        user_path(participant.user),
-        class: [ "player", state_class ].reject(&:blank?).join(" ")
+      link_to user_path(participant.user),
+        class: [ "player", state_class ].reject(&:blank?).join(" "),
+        &player_content
     else
       content_tag :span, "", class: "player is-empty"
     end
