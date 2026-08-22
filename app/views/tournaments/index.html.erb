@@ -11,10 +11,8 @@
               <%= tournament_status_label(tournament) %>
             </span>
           </div>
-          <p class="text-sm text-slate-500 mt-1 flex items-center gap-1.5">
-            作成者:
-            <%= user_avatar_tag(tournament.creator, css_class: "avatar avatar--sm") %>
-            <%= tournament.creator.name %> · 参加者 <%= tournament.participants.count %> 人
+          <p class="text-sm text-slate-500 mt-1">
+            参加者 <%= tournament.participants.count %> 人
           </p>
         <% end %>
       </li>
