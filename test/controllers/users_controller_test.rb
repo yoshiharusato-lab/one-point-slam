@@ -34,4 +34,23 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to @user
     assert_not @user.reload.avatar.attached?
   end
+
+  test "戦績 excludes tournaments that haven't started yet" do
+    admin = User.create!(name: "admin", email_address: "uc-admin@example.com", password: "password123", admin: true)
+    draft_tournament = admin.tournaments.create!(name: "Draft", status: "draft")
+    draft_tournament.participants.create!(user: @user)
+
+    other_user = User.create!(name: "op", email_address: "uc-op@example.com", password: "password123")
+    active_tournament = admin.tournaments.create!(name: "Active", status: "draft")
+    active_tournament.participants.create!(user: @user)
+    active_tournament.participants.create!(user: other_user)
+    BracketGenerator.new(active_tournament).generate!
+
+    sign_in_as @user
+    get user_path(@user)
+
+    assert_response :success
+    assert_select "a", text: "Active"
+    assert_select "a", text: "Draft", count: 0
+  end
 end
