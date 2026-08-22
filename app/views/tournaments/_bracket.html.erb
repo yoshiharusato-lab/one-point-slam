@@ -38,8 +38,10 @@
     <div class="tournament-champion-banner">
       <span class="champion-trophy">🏆</span>
       <span class="champion-label">優勝</span>
-      <%= user_avatar_tag(champion.user, css_class: "champion-avatar") %>
-      <span class="champion-player-name"><%= champion.display_name %></span>
+      <%= link_to user_path(champion.user), class: "champion-link" do %>
+        <%= user_avatar_tag(champion.user, css_class: "champion-avatar") %>
+        <span class="champion-player-name"><%= champion.display_name %></span>
+      <% end %>
     </div>
   <% end %>
 

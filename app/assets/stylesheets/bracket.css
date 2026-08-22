@@ -249,6 +249,13 @@ button.player {
   letter-spacing: 2px;
 }
 
+.champion-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+}
+
 .champion-avatar {
   width: 44px;
   height: 44px;
