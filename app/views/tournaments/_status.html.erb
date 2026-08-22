@@ -3,8 +3,10 @@
 </span>
 
 <% if tournament.completed? && tournament.champion %>
-  <p class="mt-2 text-lg font-bold text-emerald-700">
-    優勝: <%= tournament.champion.display_name %>
+  <p class="mt-2 text-lg font-bold text-emerald-700 flex items-center gap-1.5">
+    優勝:
+    <%= user_avatar_tag(tournament.champion.user, css_class: "avatar avatar--sm") %>
+    <%= tournament.champion.display_name %>
   </p>
 <% elsif tournament.active? %>
   <p class="mt-2 text-sm text-slate-500">
