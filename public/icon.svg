@@ -1,7 +1,7 @@
 <svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <clipPath id="ball">
-      <circle cx="256" cy="256" r="256"/>
+      <circle cx="256" cy="256" r="200"/>
     </clipPath>
     <radialGradient id="shade" cx="35%" cy="30%" r="75%">
       <stop offset="0%" stop-color="#e6f265"/>
@@ -10,10 +10,10 @@
     </radialGradient>
   </defs>
 
-  <circle cx="256" cy="256" r="256" fill="url(#shade)"/>
+  <circle cx="256" cy="256" r="200" fill="url(#shade)"/>
 
-  <g clip-path="url(#ball)" fill="none" stroke="#ffffff" stroke-width="30" stroke-linecap="round">
-    <path d="M 30 130 C 150 190, 150 322, 30 382"/>
-    <path d="M 482 130 C 362 190, 362 322, 482 382"/>
+  <g clip-path="url(#ball)" fill="none" stroke="#ffffff" stroke-width="24" stroke-linecap="round">
+    <path d="M 80 158 C 174 204, 174 308, 80 354"/>
+    <path d="M 432 158 C 338 204, 338 308, 432 354"/>
   </g>
 </svg>
