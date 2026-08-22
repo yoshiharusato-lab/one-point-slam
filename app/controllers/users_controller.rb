@@ -6,7 +6,11 @@ class UsersController < ApplicationController
   end
 
   def show
-    @participations = @user.participants.includes(:tournament).order(created_at: :desc)
+    @participations = @user.participants
+      .joins(:tournament)
+      .where.not(tournaments: { status: "draft" })
+      .includes(:tournament)
+      .order(created_at: :desc)
   end
 
   def update
