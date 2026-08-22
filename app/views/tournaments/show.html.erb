@@ -5,11 +5,7 @@
 <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-6">
   <div>
     <h1 class="text-3xl font-bold text-slate-800"><%= @tournament.name %></h1>
-    <p class="text-slate-500 mt-1 flex items-center gap-1.5">
-      作成者:
-      <%= user_avatar_tag(@tournament.creator, css_class: "avatar avatar--sm") %>
-      <%= @tournament.creator.name %>
-    </p>
+    <p class="text-slate-500 mt-1">参加者 <%= @tournament.participants.count %> 人</p>
   </div>
 
   <div id="tournament_status">
@@ -33,10 +29,13 @@
   <section class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm mb-8">
     <h2 class="text-lg font-semibold text-slate-800 mb-4">登録参加者</h2>
     <ul class="grid sm:grid-cols-2 gap-2">
-      <% @tournament.participants.includes(:user).each do |participant| %>
-        <li class="px-3 py-2 bg-slate-50 rounded-lg text-slate-700">
-          <%= participant.display_name %>
-          <span class="text-xs text-slate-400"><%= participant.user.email_address %></span>
+      <% @tournament.participants.includes(user: { avatar_attachment: :blob }).each do |participant| %>
+        <li class="flex items-center gap-2 px-3 py-2 bg-slate-50 rounded-lg text-slate-700">
+          <%= user_avatar_tag(participant.user, css_class: "avatar avatar--sm") %>
+          <span>
+            <%= participant.display_name %>
+            <span class="text-xs text-slate-400"><%= participant.user.email_address %></span>
+          </span>
         </li>
       <% end %>
     </ul>
