@@ -5,7 +5,7 @@ class TournamentsController < ApplicationController
   before_action :require_admin!, only: %i[ new create edit update destroy start ]
 
   def index
-    @tournaments = Tournament.recent
+    @tournaments = Tournament.recent.includes(creator: { avatar_attachment: :blob })
   end
 
   def show

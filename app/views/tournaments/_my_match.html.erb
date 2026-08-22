@@ -35,11 +35,15 @@
     <p class="my-match-card__round-label"><%= next_match.personal_round_label(participant) %></p>
     <div class="my-match-card__versus">
       <div class="my-match-card__player my-match-card__player--me">
+        <%= user_avatar_tag(participant.user, css_class: "avatar avatar--md my-match-card__player-avatar") %>
         <%= participant.display_name %>
         <span class="my-match-card__you">あなた</span>
       </div>
       <div class="my-match-card__vs">VS</div>
       <div class="my-match-card__player">
+        <% if opponent %>
+          <%= user_avatar_tag(opponent.user, css_class: "avatar avatar--md my-match-card__player-avatar") %>
+        <% end %>
         <%= opponent&.display_name || "—" %>
       </div>
     </div>
@@ -72,7 +76,11 @@
     <div class="my-match-card__waiting">
       <p class="my-match-card__headline">対戦相手を待っています</p>
       <% if opponent %>
-        <p class="my-match-card__sub">次の対戦相手: <strong><%= opponent.display_name %></strong></p>
+        <p class="my-match-card__sub flex items-center justify-center gap-1.5">
+          次の対戦相手:
+          <%= user_avatar_tag(opponent.user, css_class: "avatar avatar--sm") %>
+          <strong><%= opponent.display_name %></strong>
+        </p>
       <% else %>
         <p class="my-match-card__sub">前の試合の結果を待っています</p>
       <% end %>

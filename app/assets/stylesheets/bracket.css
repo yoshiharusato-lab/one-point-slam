@@ -355,6 +355,11 @@ button.player {
   background: #ecfdf5;
 }
 
+.my-match-card__player-avatar {
+  display: block;
+  margin: 0 auto 0.5rem;
+}
+
 .my-match-card__you {
   display: block;
   font-size: 0.65rem;
