@@ -9,6 +9,9 @@ console_command = '/rails/bin/rails console'
 
 [build]
 
+[processes]
+  app = "./bin/rails server"
+
 [mounts]
   source = "storage"
   destination = "/rails/storage"
