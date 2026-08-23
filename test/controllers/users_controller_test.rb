@@ -2,8 +2,8 @@ require "test_helper"
 
 class UsersControllerTest < ActionDispatch::IntegrationTest
   setup do
-    @user = User.create!(name: "avatar-user", email_address: "avatar-user@example.com", password: "password123")
-    @other_user = User.create!(name: "other-user", email_address: "other-user@example.com", password: "password123")
+    @user = User.create!(name: "1 avatar-user", email_address: "avatar-user@student.gs.chiba-u.jp", password: "password123")
+    @other_user = User.create!(name: "1 other-user", email_address: "other-user@student.gs.chiba-u.jp", password: "password123")
   end
 
   test "a user can upload their own avatar" do
@@ -36,11 +36,11 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "戦績 excludes tournaments that haven't started yet" do
-    admin = User.create!(name: "admin", email_address: "uc-admin@example.com", password: "password123", admin: true)
+    admin = User.create!(name: "1 admin", email_address: "uc-admin@student.gs.chiba-u.jp", password: "password123", admin: true)
     draft_tournament = admin.tournaments.create!(name: "Draft", status: "draft")
     draft_tournament.participants.create!(user: @user)
 
-    other_user = User.create!(name: "op", email_address: "uc-op@example.com", password: "password123")
+    other_user = User.create!(name: "1 op", email_address: "uc-op@student.gs.chiba-u.jp", password: "password123")
     active_tournament = admin.tournaments.create!(name: "Active", status: "draft")
     active_tournament.participants.create!(user: @user)
     active_tournament.participants.create!(user: other_user)
