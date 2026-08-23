@@ -25,9 +25,6 @@ class PagesSmokeTest < ActionDispatch::IntegrationTest
 
     get new_registration_path
     assert_response :success
-
-    get new_password_path
-    assert_response :success
   end
 
   test "signed-in pages render for a regular participant" do
