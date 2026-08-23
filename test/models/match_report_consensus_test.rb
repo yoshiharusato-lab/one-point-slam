@@ -2,11 +2,11 @@ require "test_helper"
 
 class MatchReportConsensusTest < ActiveSupport::TestCase
   setup do
-    @admin = User.create!(name: "admin", email_address: "consensus-admin@example.com", password: "password123", admin: true)
+    @admin = User.create!(name: "1 admin", email_address: "consensus-admin@student.gs.chiba-u.jp", password: "password123", admin: true)
     @tournament = @admin.tournaments.create!(name: "Consensus", status: "draft")
 
     3.times do |i|
-      user = User.create!(name: "player#{i}", email_address: "consensus-p#{i}@example.com", password: "password123")
+      user = User.create!(name: "1 player#{i}", email_address: "consensus-p#{i}@student.gs.chiba-u.jp", password: "password123")
       @tournament.participants.create!(user: user)
     end
 
