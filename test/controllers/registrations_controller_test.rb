@@ -4,7 +4,7 @@ class RegistrationsControllerTest < ActionDispatch::IntegrationTest
   test "signing up creates a non-admin user and logs them in" do
     assert_difference "User.count", 1 do
       post registration_path, params: {
-        user: { name: "12345678 New Player", email_address: "new-player@student.gs.chiba-u.jp", password: "password123", password_confirmation: "password123" }
+        user: { name: "12 New Player", email_address: "new-player@student.gs.chiba-u.jp", password: "password123", password_confirmation: "password123" }
       }
     end
 
@@ -15,7 +15,7 @@ class RegistrationsControllerTest < ActionDispatch::IntegrationTest
 
   test "cannot self-promote to admin via the signup form" do
     post registration_path, params: {
-      user: { name: "12345678 Sneaky", email_address: "sneaky@student.gs.chiba-u.jp", password: "password123", password_confirmation: "password123", admin: true }
+      user: { name: "12 Sneaky", email_address: "sneaky@student.gs.chiba-u.jp", password: "password123", password_confirmation: "password123", admin: true }
     }
 
     user = User.find_by(email_address: "sneaky@student.gs.chiba-u.jp")
@@ -25,7 +25,7 @@ class RegistrationsControllerTest < ActionDispatch::IntegrationTest
   test "rejects an email address outside the student domain" do
     assert_no_difference "User.count" do
       post registration_path, params: {
-        user: { name: "12345678 Outsider", email_address: "outsider@example.com", password: "password123", password_confirmation: "password123" }
+        user: { name: "12 Outsider", email_address: "outsider@example.com", password: "password123", password_confirmation: "password123" }
       }
     end
 

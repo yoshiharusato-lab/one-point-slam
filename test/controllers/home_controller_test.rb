@@ -17,7 +17,7 @@ class HomeControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "my_match renders when signed in with no active tournament" do
-    user = User.create!(name: "1 solo", email_address: "solo@student.gs.chiba-u.jp", password: "password123")
+    user = User.create!(name: "10 solo", email_address: "solo@student.gs.chiba-u.jp", password: "password123")
     sign_in_as user
 
     get my_match_path
@@ -26,9 +26,9 @@ class HomeControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "my_match renders the participant's next match when in an active tournament" do
-    admin = User.create!(name: "1 admin", email_address: "hc-admin@student.gs.chiba-u.jp", password: "password123", admin: true)
-    player = User.create!(name: "1 player", email_address: "hc-player@student.gs.chiba-u.jp", password: "password123")
-    opponent = User.create!(name: "1 opponent", email_address: "hc-opponent@student.gs.chiba-u.jp", password: "password123")
+    admin = User.create!(name: "10 admin", email_address: "hc-admin@student.gs.chiba-u.jp", password: "password123", admin: true)
+    player = User.create!(name: "10 player", email_address: "hc-player@student.gs.chiba-u.jp", password: "password123")
+    opponent = User.create!(name: "10 opponent", email_address: "hc-opponent@student.gs.chiba-u.jp", password: "password123")
 
     tournament = admin.tournaments.create!(name: "HC", status: "draft")
     tournament.participants.create!(user: player)

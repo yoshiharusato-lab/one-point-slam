@@ -5,8 +5,8 @@ require "test_helper"
 # ことがあったため、主要なGETページをひと通り叩いて :success を確認する。
 class PagesSmokeTest < ActionDispatch::IntegrationTest
   setup do
-    @admin = User.create!(name: "1 smoke-admin", email_address: "smoke-admin@student.gs.chiba-u.jp", password: "password123", admin: true)
-    @player = User.create!(name: "1 smoke-player", email_address: "smoke-player@student.gs.chiba-u.jp", password: "password123")
+    @admin = User.create!(name: "10 smoke-admin", email_address: "smoke-admin@student.gs.chiba-u.jp", password: "password123", admin: true)
+    @player = User.create!(name: "10 smoke-player", email_address: "smoke-player@student.gs.chiba-u.jp", password: "password123")
     @tournament = @admin.tournaments.create!(name: "Smoke Tournament", status: "draft")
     @tournament.participants.create!(user: @player)
     @tournament.participants.create!(user: @admin)
