@@ -2,11 +2,11 @@ require "test_helper"
 
 class BracketGenerationTest < ActiveSupport::TestCase
   def build_tournament(participant_count)
-    admin = User.create!(name: "1 admin", email_address: "admin-#{participant_count}@student.gs.chiba-u.jp", password: "password123", admin: true)
+    admin = User.create!(name: "10 admin", email_address: "admin-#{participant_count}@student.gs.chiba-u.jp", password: "password123", admin: true)
     tournament = admin.tournaments.create!(name: "T#{participant_count}", status: "draft")
 
     participant_count.times do |i|
-      user = User.create!(name: "1 user-#{participant_count}-#{i}", email_address: "user-#{participant_count}-#{i}@student.gs.chiba-u.jp", password: "password123")
+      user = User.create!(name: "10 user-#{participant_count}-#{i}", email_address: "user-#{participant_count}-#{i}@student.gs.chiba-u.jp", password: "password123")
       tournament.participants.create!(user: user)
     end
 

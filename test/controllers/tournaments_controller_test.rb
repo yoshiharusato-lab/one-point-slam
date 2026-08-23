@@ -2,9 +2,9 @@ require "test_helper"
 
 class TournamentsControllerTest < ActionDispatch::IntegrationTest
   setup do
-    @admin = User.create!(name: "1 admin", email_address: "tc-admin@student.gs.chiba-u.jp", password: "password123", admin: true)
-    @player = User.create!(name: "1 player", email_address: "tc-player@student.gs.chiba-u.jp", password: "password123")
-    @other_player = User.create!(name: "1 other", email_address: "tc-other@student.gs.chiba-u.jp", password: "password123")
+    @admin = User.create!(name: "10 admin", email_address: "tc-admin@student.gs.chiba-u.jp", password: "password123", admin: true)
+    @player = User.create!(name: "10 player", email_address: "tc-player@student.gs.chiba-u.jp", password: "password123")
+    @other_player = User.create!(name: "10 other", email_address: "tc-other@student.gs.chiba-u.jp", password: "password123")
   end
 
   test "a non-admin cannot reach the new tournament form" do

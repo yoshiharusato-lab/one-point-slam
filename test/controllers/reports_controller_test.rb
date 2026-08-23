@@ -2,12 +2,12 @@ require "test_helper"
 
 class ReportsControllerTest < ActionDispatch::IntegrationTest
   setup do
-    @admin = User.create!(name: "1 admin", email_address: "rc-admin@student.gs.chiba-u.jp", password: "password123", admin: true)
+    @admin = User.create!(name: "10 admin", email_address: "rc-admin@student.gs.chiba-u.jp", password: "password123", admin: true)
     @tournament = @admin.tournaments.create!(name: "RC", status: "draft")
 
-    @user1 = User.create!(name: "1 p1", email_address: "rc-p1@student.gs.chiba-u.jp", password: "password123")
-    @user2 = User.create!(name: "1 p2", email_address: "rc-p2@student.gs.chiba-u.jp", password: "password123")
-    @outsider_user = User.create!(name: "1 outsider", email_address: "rc-outsider@student.gs.chiba-u.jp", password: "password123")
+    @user1 = User.create!(name: "10 p1", email_address: "rc-p1@student.gs.chiba-u.jp", password: "password123")
+    @user2 = User.create!(name: "10 p2", email_address: "rc-p2@student.gs.chiba-u.jp", password: "password123")
+    @outsider_user = User.create!(name: "10 outsider", email_address: "rc-outsider@student.gs.chiba-u.jp", password: "password123")
 
     @tournament.participants.create!(user: @user1)
     @tournament.participants.create!(user: @user2)
@@ -41,8 +41,8 @@ class ReportsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "a participant cannot report on someone else's match" do
-    other_user1 = User.create!(name: "1 op1", email_address: "rc-op1@student.gs.chiba-u.jp", password: "password123")
-    other_user2 = User.create!(name: "1 op2", email_address: "rc-op2@student.gs.chiba-u.jp", password: "password123")
+    other_user1 = User.create!(name: "10 op1", email_address: "rc-op1@student.gs.chiba-u.jp", password: "password123")
+    other_user2 = User.create!(name: "10 op2", email_address: "rc-op2@student.gs.chiba-u.jp", password: "password123")
     other_tournament = @admin.tournaments.create!(name: "RC-other", status: "draft")
     other_tournament.participants.create!(user: other_user1)
     other_tournament.participants.create!(user: other_user2)

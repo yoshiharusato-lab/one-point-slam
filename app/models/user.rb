@@ -8,8 +8,8 @@ class User < ApplicationRecord
   normalizes :email_address, with: ->(e) { e.strip.downcase }
 
   validates :name, presence: true, format: {
-    with: /\A[0-9]+[\s　]+\S.*\z/,
-    message: "は「学籍番号 氏名」の形式で入力してください(例: 12345678 千葉太郎)"
+    with: /\A[0-9]{2}[\s　]+\S.*\z/,
+    message: "は「学籍番号(2桁) 氏名」の形式で入力してください(例: 22 山田太郎)"
   }
   validates :email_address, presence: true, uniqueness: true, format: {
     with: /\A[A-Za-z0-9._%+-]+@student\.gs\.chiba-u\.jp\z/,
