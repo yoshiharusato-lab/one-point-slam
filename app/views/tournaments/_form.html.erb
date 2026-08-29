@@ -14,13 +14,23 @@
     <%= form.text_field :name, required: true, placeholder: "例: 春の卓球大会", class: "w-full rounded-lg border border-slate-300 px-3 py-2 focus:outline-emerald-500 focus:ring-1 focus:ring-emerald-500" %>
   </div>
 
-  <div>
-    <p class="block text-sm font-medium text-slate-700 mb-2">参加者を選択（2人以上）</p>
+  <div data-controller="participant-filter">
+    <div class="flex items-center justify-between mb-2">
+      <p class="block text-sm font-medium text-slate-700">参加者を選択（2人以上）</p>
+      <div class="flex gap-1.5">
+        <button type="button" data-filter-value="all" data-participant-filter-target="filterButton" data-action="participant-filter#filter" class="px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-600 text-white">全員</button>
+        <button type="button" data-filter-value="day2" data-participant-filter-target="filterButton" data-action="participant-filter#filter" class="px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-600">2日目参加</button>
+        <button type="button" data-filter-value="day3" data-participant-filter-target="filterButton" data-action="participant-filter#filter" class="px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-600">3日目参加</button>
+      </div>
+    </div>
     <div class="bg-white border border-slate-200 rounded-lg p-4 max-h-64 overflow-y-auto space-y-2">
       <% users.each do |user| %>
-        <label class="flex items-center gap-3 p-2 rounded hover:bg-slate-50 cursor-pointer">
+        <label class="flex items-center gap-3 p-2 rounded hover:bg-slate-50 cursor-pointer" data-participant-filter-target="row" data-day2="<%= user.day2_attending? %>" data-day3="<%= user.day3_attending? %>">
           <%= check_box_tag "participant_user_ids[]", user.id, tournament.participants.any? { |p| p.user_id == user.id }, class: "rounded border-slate-300 text-emerald-600 focus:ring-emerald-500" %>
           <span class="font-medium text-slate-800"><%= user.name %></span>
+          <% attendance_labels(user).each do |label| %>
+            <span class="px-2 py-0.5 bg-sky-100 text-sky-700 rounded-full text-xs"><%= label %>参加</span>
+          <% end %>
           <span class="text-sm text-slate-500"><%= user.email_address %></span>
         </label>
       <% end %>
