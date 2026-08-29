@@ -53,6 +53,31 @@ class BracketGenerationTest < ActiveSupport::TestCase
     end
   end
 
+  test "byes are spread one per match instead of paired against each other" do
+    tournament = build_tournament(6)
+    BracketGenerator.new(tournament).generate!
+
+    round2 = tournament.matches.where(round: 2).order(:position).to_a
+    assert_equal 2, round2.size
+
+    # 6人なら1回戦は2試合・シードは2人。シード同士を同じ枠に組んでしまうと、
+    # 片方の準決勝が1回戦の結果を待たずに埋まってしまうため、1人ずつ別の枠で待たせる。
+    round2.each do |match|
+      seated = [ match.player1, match.player2 ].compact
+      assert_equal 1, seated.size, "each round-2 match should start with exactly one bye waiting, not two"
+      assert_equal "pending", match.status
+    end
+
+    round1 = tournament.matches.where(round: 1).order(:position).to_a
+    round1.each { |m| m.submit_report!(m.player1, m.player1); m.submit_report!(m.player2, m.player1) }
+
+    tournament.matches.where(round: 2).order(:position).each_with_index do |match, i|
+      round1_winner = round1[i].winner
+      assert_includes [ match.player1, match.player2 ], round1_winner,
+        "the bye waiting in round-2 match #{i} should face that side's round-1 winner, not the other bye"
+    end
+  end
+
   test "generate! refuses to start with fewer than 2 participants" do
     tournament = build_tournament(1)
 

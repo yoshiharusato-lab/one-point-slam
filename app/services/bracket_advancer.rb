@@ -9,29 +9,60 @@ class BracketAdvancer
     next_matches = tournament.matches.where(round: next_round).order(:position).to_a
     return if next_matches.empty?
 
-    waiting = next_matches.flat_map { |m| [ m.player1, m.player2 ] }.compact.uniq
     new_winners = round_matches.order(:position).map(&:winner).compact
 
-    pool = (waiting + new_winners).uniq
-
-    next_matches.each do |match|
-      match.update!(player1: nil, player2: nil, winner: nil, status: "pending")
-    end
-
-    remaining_byes = assign_players_to_round(next_matches, pool)
+    remaining_byes = populate_round(next_matches, new_winners)
 
     next_next = next_round + 1
     return if remaining_byes.empty? || next_next > tournament.round_count
 
     later_matches = tournament.matches.where(round: next_next).order(:position).to_a
-    later_waiting = later_matches.flat_map { |m| [ m.player1, m.player2 ] }.compact.uniq
-    later_pool = (later_waiting + remaining_byes).uniq
+    populate_round(later_matches, remaining_byes)
+  end
 
-    later_matches.each do |match|
-      match.update!(player1: nil, player2: nil, winner: nil, status: "pending")
+  # 新しく決まった参加者(前ラウンドの勝者など)を対戦カードに割り振る。
+  # 既に片方の枠にシード(不戦勝)が入って相手を待っているカードを優先して埋め、
+  # まっさらな枠だけを新規にペアリングする。こうすることで、シードで待っていた
+  # 枠に無関係の2人が組まれ直したり、逆に前ラウンドの勝者同士がぶつかったりしない。
+  def self.populate_round(matches, arrivals)
+    return arrivals if matches.empty? || arrivals.empty?
+
+    pool = arrivals.dup
+    empty_matches = []
+
+    matches.each do |match|
+      seated = [ match.player1, match.player2 ].compact
+      next if seated.size == 2
+
+      if seated.size == 1
+        next if pool.empty?
+
+        opponent = pool.shift
+        slot = match.player1.present? ? :player2 : :player1
+        match.update!(slot => opponent, status: "ready")
+      else
+        empty_matches << match
+      end
     end
 
-    assign_players_to_round(later_matches, later_pool)
+    assign_players_to_round(empty_matches, pool)
+  end
+
+  # シード(不戦勝)を対戦カードごとにできるだけ1人ずつ、順番に割り振る(左右のバランスを保つため)。
+  # 対戦カードの数よりシードの人数が多いときだけ、2周目で同じ枠の2人目として入る
+  # (その場合はシード同士の対戦になるが、これは人数的に避けられない)。
+  def self.assign_byes_evenly(matches, byes)
+    return if matches.empty? || byes.empty?
+
+    byes.each_with_index do |bye, index|
+      match = matches[index % matches.size]
+
+      if match.player1.blank?
+        match.update!(player1: bye, status: match.player2.present? ? "ready" : "pending")
+      else
+        match.update!(player2: bye, status: "ready")
+      end
+    end
   end
 
   def self.assign_players_to_round(matches, pool)
