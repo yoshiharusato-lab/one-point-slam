@@ -24,7 +24,7 @@
         class: [ "player", state_class ].reject(&:blank?).join(" "),
         &player_content
     else
-      content_tag :span, "対戦相手待ち", class: "player is-empty"
+      content_tag :span, "", class: "player is-empty"
     end
   end
 %>
