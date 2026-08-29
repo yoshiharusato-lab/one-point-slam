@@ -78,6 +78,51 @@ class BracketGenerationTest < ActiveSupport::TestCase
     end
   end
 
+  # 表示側(BracketHelper#bracket_left_right_center)は各ラウンドの対戦カードを
+  # 前半/後半で左右に振り分けているだけなので、勝ち上がりの実装側もこれと同じ
+  # 比率で左右を保たないと、「準々決勝の左側で勝ったのに、準決勝を見たら左側には
+  # 全く関係ない(その試合の勝者を待っていたはずのない)人が既に入っている」という
+  # ズレが起きる。1回戦の試合数と2回戦の対戦カード数が一致しない(例: 10人)場合に
+  # 特に起きやすいので、そのあたりを広めにカバーする。
+  def side_split(matches)
+    half = matches.size / 2
+    [ matches.first(half), matches.drop(half) ]
+  end
+
+  ((3..17).to_a + [ 31, 33, 63 ]).each do |n|
+    test "a #{n}-participant bracket never lets a winner cross to the other side of the bracket" do
+      tournament = build_tournament(n)
+      BracketGenerator.new(tournament).generate!
+      assert tournament.round_count.positive?
+
+      # 決勝(最終ラウンド)は左右に分けず中央に1試合だけ表示するため、
+      # 「準決勝→決勝」の遷移はこのチェックの対象外(両側の勝者が同じ1試合に集まるのが正しい)。
+      (1...(tournament.round_count - 1)).each do |round|
+        round_matches = tournament.matches.where(round: round).order(:position).to_a
+        next_matches = tournament.matches.where(round: round + 1).order(:position).to_a
+        left_matches, right_matches = side_split(round_matches)
+        left_next, right_next = side_split(next_matches)
+
+        left_matches.each { |m| next unless m.playable?; m.submit_report!(m.player1, m.player1); m.submit_report!(m.player2, m.player1) }
+        right_matches.each { |m| next unless m.playable?; m.submit_report!(m.player1, m.player1); m.submit_report!(m.player2, m.player1) }
+
+        left_seated = left_next.flat_map { |m| [ m.reload.player1, m.player2 ] }.compact
+        right_seated = right_next.flat_map { |m| [ m.reload.player1, m.player2 ] }.compact
+
+        left_matches.each do |m|
+          next unless m.winner
+          assert_includes left_seated, m.winner,
+            "n=#{n}, round #{round}: the left side's winner #{m.winner.user.name} must appear on the left side of round #{round + 1}, not the right"
+        end
+        right_matches.each do |m|
+          next unless m.winner
+          assert_includes right_seated, m.winner,
+            "n=#{n}, round #{round}: the right side's winner #{m.winner.user.name} must appear on the right side of round #{round + 1}, not the left"
+        end
+      end
+    end
+  end
+
   test "generate! refuses to start with fewer than 2 participants" do
     tournament = build_tournament(1)
 
