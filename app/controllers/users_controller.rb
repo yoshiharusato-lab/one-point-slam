@@ -25,8 +25,8 @@ class UsersController < ApplicationController
       return
     end
 
-    @user.update!(avatar_params)
-    redirect_to @user, notice: "プロフィール画像を更新しました"
+    @user.update!(profile_params)
+    redirect_to @user, notice: "プロフィールを更新しました"
   end
 
   private
@@ -35,8 +35,8 @@ class UsersController < ApplicationController
     @user = User.find(params[:id])
   end
 
-  def avatar_params
-    params.require(:user).permit(:avatar)
+  def profile_params
+    params.require(:user).permit(:avatar, :day2_attending, :day3_attending)
   end
 
   def valid_avatar?(avatar)
