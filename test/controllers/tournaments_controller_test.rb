@@ -74,7 +74,7 @@ class TournamentsControllerTest < ActionDispatch::IntegrationTest
     end
     BracketGenerator.new(tournament).generate!
 
-    bye_names = tournament.matches.where(round: 2).map { |m| m.player1&.display_name }.compact
+    bye_names = tournament.matches.where(round: 2).flat_map { |m| [ m.player1&.display_name, m.player2&.display_name ] }.compact
     assert_equal 2, bye_names.size
 
     get tournament_path(tournament)
