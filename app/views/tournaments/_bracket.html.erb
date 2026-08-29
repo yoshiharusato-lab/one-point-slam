@@ -24,7 +24,7 @@
         class: [ "player", state_class ].reject(&:blank?).join(" "),
         &player_content
     else
-      content_tag :span, "", class: "player is-empty"
+      content_tag :span, "対戦相手待ち", class: "player is-empty"
     end
   end
 %>
@@ -56,8 +56,8 @@
             <div class="matches">
               <% round_data[:matches].each do |match| %>
                 <div class="match <%= i.zero? ? 'round-one-match' : 'round-match' %> <%= bracket_match_state_class(match) %>">
-                  <div class="player-wrap"><%= render_player.call(bracket_visible_player(match.player1, match), match) %></div>
-                  <div class="player-wrap"><%= render_player.call(bracket_visible_player(match.player2, match), match) %></div>
+                  <div class="player-wrap"><%= render_player.call(match.player1, match) %></div>
+                  <div class="player-wrap"><%= render_player.call(match.player2, match) %></div>
                 </div>
               <% end %>
             </div>
@@ -71,8 +71,8 @@
           <div class="matches">
             <% layout[:final][:matches].each do |match| %>
               <div class="match final-match <%= bracket_match_state_class(match) %>">
-                <div class="player-wrap"><%= render_player.call(bracket_visible_player(match.player1, match), match) %></div>
-                <div class="player-wrap"><%= render_player.call(bracket_visible_player(match.player2, match), match) %></div>
+                <div class="player-wrap"><%= render_player.call(match.player1, match) %></div>
+                <div class="player-wrap"><%= render_player.call(match.player2, match) %></div>
               </div>
             <% end %>
           </div>
@@ -87,8 +87,8 @@
             <div class="matches">
               <% round_data[:matches].each do |match| %>
                 <div class="match <%= original_index.zero? ? 'round-one-match' : 'round-match' %> <%= bracket_match_state_class(match) %>">
-                  <div class="player-wrap"><%= render_player.call(bracket_visible_player(match.player1, match), match) %></div>
-                  <div class="player-wrap"><%= render_player.call(bracket_visible_player(match.player2, match), match) %></div>
+                  <div class="player-wrap"><%= render_player.call(match.player1, match) %></div>
+                  <div class="player-wrap"><%= render_player.call(match.player2, match) %></div>
                 </div>
               <% end %>
             </div>

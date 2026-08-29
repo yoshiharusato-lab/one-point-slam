@@ -222,8 +222,17 @@ button.player {
   color: #9aa0a6;
 }
 
+/* シードでまだ対戦相手(前ラウンドの勝者)が決まっていない人。枠線は黒(未定)のまま、
+   文字だけ薄くして「まだ何も決まっていない」ことが分かるようにする。 */
+.player.is-waiting {
+  color: #6b7280;
+  font-style: italic;
+}
+
 .player.is-empty {
   color: #9aa0a6;
+  font-size: 13px;
+  font-style: italic;
 }
 
 .tournament-champion-banner {
