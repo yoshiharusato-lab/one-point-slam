@@ -47,6 +47,16 @@ module BracketHelper
     { left: left, right: right, final: rounds.last }
   end
 
+  # まだ相手(前ラウンドの勝者)が決まっていない対戦カード(status: pending)は、
+  # 片方にシード(不戦勝)が既に座っていても表示上は空欄にする。前ラウンドが決まる前から
+  # シードの名前だけ見えてしまうと、あたかも既に勝ち上がったかのように見えてしまうため、
+  # 対戦カードの両方が決まったとき(status: ready 以降)に初めて両者をまとめて表示する。
+  def bracket_visible_player(participant, match)
+    return nil if match.status == "pending"
+
+    participant
+  end
+
   def bracket_match_state_class(match)
     return "match-decided" if match.completed?
     return "match-ready" if match.playable?
