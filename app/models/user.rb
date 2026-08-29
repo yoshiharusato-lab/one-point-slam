@@ -24,4 +24,22 @@ class User < ApplicationRecord
   def admin?
     admin
   end
+
+  def day2_attending_label
+    attendance_label(day2_attending)
+  end
+
+  def day3_attending_label
+    attendance_label(day3_attending)
+  end
+
+  private
+
+  def attendance_label(value)
+    case value
+    when true then "する"
+    when false then "しない"
+    else "未回答"
+    end
+  end
 end

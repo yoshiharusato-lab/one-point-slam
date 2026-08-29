@@ -25,11 +25,27 @@ module ApplicationHelper
   # avatar が未設定の場合は共通のデフォルト画像を表示する。
   # (この環境には画像変換ライブラリ(libvips等)が無いため、variantでのリサイズはせず
   #  元画像をそのまま出し、表示サイズはCSS側の width/height/object-fit で揃えている)
-  def user_avatar_tag(user, css_class: "avatar")
+  def user_avatar_tag(user, css_class: "avatar", html_options: {})
     if user&.avatar&.attached?
-      image_tag user.avatar, class: css_class, alt: user.name
+      image_tag user.avatar, **html_options.merge(class: css_class, alt: user.name)
     else
-      image_tag "default_avatar.jpg", class: css_class, alt: user&.name.to_s
+      image_tag "default_avatar.jpg", **html_options.merge(class: css_class, alt: user&.name.to_s)
     end
+  end
+
+  def attendance_badge_class(value)
+    case value
+    when true then "bg-emerald-100 text-emerald-700"
+    when false then "bg-slate-100 text-slate-500"
+    else "bg-slate-50 text-slate-400 border border-dashed border-slate-300"
+    end
+  end
+
+  # 大会作成時のユーザー一覧に出す、参加を選んだ日程だけのラベル
+  def attendance_labels(user)
+    [
+      ("2日目" if user.day2_attending?),
+      ("3日目" if user.day3_attending?)
+    ].compact
   end
 end
