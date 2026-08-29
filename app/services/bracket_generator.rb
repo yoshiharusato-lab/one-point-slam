@@ -82,13 +82,13 @@ class BracketGenerator
         bye_participants = shuffled.last(initial_byes)
         round1_participants = shuffled.first(shuffled.size - initial_byes)
 
-        first_round_matches = @tournament.matches.where(round: 1).order(:position)
+        first_round_matches = @tournament.matches.where(round: 1).order(:position).to_a
         round1_participants.each_slice(2).with_index do |(player1, player2), index|
           assign_first_round_match(first_round_matches[index], player1, player2)
         end
 
         next_round_matches = @tournament.matches.where(round: 2).order(:position).to_a
-        BracketAdvancer.assign_byes_evenly(next_round_matches, bye_participants)
+        BracketAdvancer.assign_byes_evenly(first_round_matches, next_round_matches, bye_participants)
       else
         first_round_matches = @tournament.matches.where(round: 1).order(:position)
         shuffled.each_slice(2).with_index do |(player1, player2), index|
