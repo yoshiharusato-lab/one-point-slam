@@ -65,10 +65,10 @@ class TournamentsControllerTest < ActionDispatch::IntegrationTest
     assert tournament.draft?
   end
 
-  test "a bye waiting in round 2 stays hidden until its round-1 match is decided" do
+  test "a bye waiting in round 2 is still visible (as waiting, not decided) before its round-1 match ends" do
     sign_in_as @admin
     tournament = @admin.tournaments.create!(name: "Bye6", status: "draft")
-    players = 6.times.map do |i|
+    6.times do |i|
       user = User.create!(name: "10 bye-#{i}", email_address: "tc-bye-#{i}@student.gs.chiba-u.jp", password: "password123")
       tournament.participants.create!(user: user)
     end
@@ -78,9 +78,12 @@ class TournamentsControllerTest < ActionDispatch::IntegrationTest
     assert_equal 2, bye_names.size
 
     get tournament_path(tournament)
-    bye_names.each do |name|
-      assert_not_includes response.body, name, "round-2 bye '#{name}' should not be visible before round1 decides who they face"
+    # 全6人が(不戦勝で待機中の2人も含めて)表示されていること。1回戦の結果を待たずに
+    # 勝ち上がりが確定したように見えないよう、対戦相手待ちであることも分かるようにする。
+    tournament.participants.each do |participant|
+      assert_includes response.body, participant.display_name, "participant '#{participant.display_name}' should be visible in the bracket"
     end
+    assert_includes response.body, "対戦相手待ち"
 
     round1 = tournament.matches.where(round: 1).order(:position).to_a
     round1.each { |m| [ m.player1, m.player2 ].each { |p| sign_in_as p.user; post match_report_path(m), params: { chosen_winner_id: m.player1_id } } }
@@ -88,7 +91,7 @@ class TournamentsControllerTest < ActionDispatch::IntegrationTest
 
     get tournament_path(tournament)
     bye_names.each do |name|
-      assert_includes response.body, name, "round-2 bye '#{name}' should appear once round1 has decided their opponent"
+      assert_includes response.body, name, "round-2 bye '#{name}' should still be visible once round1 has decided their opponent"
     end
   end
 end
