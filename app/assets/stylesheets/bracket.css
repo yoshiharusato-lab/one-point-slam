@@ -231,8 +231,6 @@ button.player {
 
 .player.is-empty {
   color: #9aa0a6;
-  font-size: 13px;
-  font-style: italic;
 }
 
 .tournament-champion-banner {
