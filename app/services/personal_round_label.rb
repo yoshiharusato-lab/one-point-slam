@@ -37,7 +37,7 @@ class PersonalRoundLabel
     if (next_match = participant.next_match)
       round_name = for_match(next_match, participant)
       opponent = participant.opponent_in(next_match)
-      return "#{round_name}（#{opponent.display_name}との次の対戦）" if opponent
+      return "#{round_name}（#{opponent.display_name}）" if opponent
 
       return "#{round_name}（次の対戦）"
     end
