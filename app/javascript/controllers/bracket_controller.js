@@ -57,7 +57,7 @@ export default class extends Controller {
       const topCenter = i * unit + MATCH_GAP / 2 + BOX_H / 2
       boxYByRound[r0].push([ topCenter, topCenter + BOX_H + SLOT_GAP ])
     })
-    const height = leaf.length * unit
+    let height = leaf.length * unit
 
     for (let idx = 1; idx < sortedRounds.length; idx++) {
       const r = parseInt(sortedRounds[idx].dataset.round, 10)
@@ -73,6 +73,24 @@ export default class extends Controller {
         }
         boxYByRound[r].push(ys)
       })
+
+      // シード同士の対戦カード(この側の前ラウンドに対応する試合が無い)は上の
+      // フォールバック位置に置かれるため、他の対戦カード(子から計算した本来の位置)
+      // と被ることがある。上から順に走査し、最低間隔(MATCH_GAP)を下回る場合だけ
+      // 必要な分だけ下へずらして、対戦カード同士が重ならないようにする。
+      let prevBottomEdge = -Infinity
+      boxYByRound[r].forEach((pair) => {
+        const topEdge = pair[0] - BOX_H / 2
+        if (topEdge < prevBottomEdge + MATCH_GAP) {
+          const shift = (prevBottomEdge + MATCH_GAP) - topEdge
+          pair[0] += shift
+          pair[1] += shift
+        }
+        prevBottomEdge = pair[1] + BOX_H / 2
+      })
+
+      const lastPair = boxYByRound[r][boxYByRound[r].length - 1]
+      if (lastPair) height = Math.max(height, lastPair[1] + BOX_H / 2)
     }
     return { boxYByRound, height }
   }
