@@ -62,6 +62,6 @@ class PersonalRoundLabelTest < ActiveSupport::TestCase
     player = match.player1
     opponent = match.player2
 
-    assert_equal "第1回戦（#{opponent.display_name}との次の対戦）", PersonalRoundLabel.progress_label(player)
+    assert_equal "第1回戦（#{opponent.display_name}）", PersonalRoundLabel.progress_label(player)
   end
 end
