@@ -22,7 +22,7 @@ class BracketAdvancer
 
       if round == 1
         # 1回戦だけはシード(不戦勝)が絡むため、生成時の seat_byes_on_side と
-        # 同じ「対戦カードへ均等に割り振る」順番で勝者を入れる(下記参照)。
+        # 同じ「隣り合った対戦カードごとにまとめる」順番で勝者を入れる(下記参照)。
         seat_round1_winners_on_side(next_matches.first(m_left), new_winners.first(k_left))
         seat_round1_winners_on_side(next_matches.drop(m_left), new_winners.drop(k_left))
       else
@@ -56,20 +56,30 @@ class BracketAdvancer
     end
   end
 
-  # 1回戦の勝者たちを、対戦カードへ「1人ずつ均等に」割り振ってから入れる
-  # (seat_byes_on_side が空けておいた予約枠と必ず同じ位置)。1回戦はシードの人数
-  # 次第で対戦カード数が2倍にならないことがあるため(例: 12人なら1回戦2試合・
-  # 2回戦2試合)、seat_arrivals のように隣り合う2試合をまとめてしまうと、片方の
-  # 対戦カードに勝者が2人とも入って対戦カードに、逆側にシード同士が入ってしまい、
-  # せっかくシードがいるのに1回戦の勝者と当たれない対戦カードができてしまう。
+  # k個(1回戦の対戦カード数)を、隣り合った順番のまま m個(2回戦の対戦カード数)の
+  # 枠へできるだけ均等に振り分ける。例えば k=7, m=4 なら [0,1]→枠0, [2,3]→枠1,
+  # [4,5]→枠2, [6]→枠3。単純な余り(index % 枠数)で散らすと、盤面上で遠く離れた
+  # 対戦カード同士が同じ枠に組み合わされてしまい、対戦カードが引き伸ばされて
+  # 線がどこに向かっているのか分からなくなる(実際に30人規模で確認された)。
+  # k <= m のとき(シードが多い)は各枠に高々1つしか入らないので、シードが
+  # 1回戦の勝者と当たれる枠の数を自然に最大化できる。
+  def self.round1_groups(k, m)
+    groups = Array.new(m) { [] }
+    (0...k).each { |i| groups[(i * m) / k] << i }
+    groups
+  end
+
+  # 1回戦の勝者たちを、対戦カードへ round1_groups と同じ組み方で入れる
+  # (seat_byes_on_side が空けておいた予約枠と必ず同じ位置)。
   def self.seat_round1_winners_on_side(matches, winners)
     return if matches.empty? || winners.empty?
 
-    m = matches.size
-    winners.each_with_index do |winner, i|
-      match = matches[i % m]
-      slot = (i / m).zero? ? :player1 : :player2
-      match.update!(slot => winner)
+    round1_groups(winners.size, matches.size).each_with_index do |indices, match_index|
+      match = matches[match_index]
+      indices.each_with_index do |winner_index, slot_index|
+        slot = slot_index.zero? ? :player1 : :player2
+        match.update!(slot => winners[winner_index])
+      end
     end
 
     matches.each do |match|
@@ -98,17 +108,21 @@ class BracketAdvancer
   end
 
   # 片側ぶんの対戦カードへシードを割り振る。1回戦の勝者が入る予定の枠
-  # (seat_round1_winners_on_side と同じ、対戦カードへ1人ずつ均等に割り振る順番)は
-  # 空けておき、それ以外の枠だけをシードで埋める。均等に割り振ることで、1回戦の
-  # 対戦カード数が2回戦の対戦カード数以下(シードが多い)なら、対戦カード1つに
-  # つき必ず1回戦の勝者が1人だけ入るようになり、シードは可能な限り1回戦の勝者と
-  # 当たる(シード同士が対戦するのは、1回戦の対戦カード数が2回戦の対戦カード数の
+  # (round1_groups で決まる、seat_round1_winners_on_side と同じ位置)は空けておき、
+  # それ以外の枠だけをシードで埋める。こうすることで、1回戦の対戦カード数が
+  # 2回戦の対戦カード数以下(シードが多い)なら対戦カード1つにつき必ず1回戦の
+  # 勝者が1人だけ入るようになり、シードは可能な限り1回戦の勝者と当たる
+  # (シード同士が対戦するのは、1回戦の対戦カード数が2回戦の対戦カード数の
   # 2倍を超える、どうしても避けられない場合だけになる)。
   def self.seat_byes_on_side(matches, reserved_for_round1, byes)
     return if matches.empty? || byes.empty?
 
-    m = matches.size
-    reserved = Array.new(reserved_for_round1) { |i| [ i % m, (i / m).zero? ? :player1 : :player2 ] }
+    reserved = []
+    round1_groups(reserved_for_round1, matches.size).each_with_index do |indices, match_index|
+      indices.each_with_index do |_, slot_index|
+        reserved << [ match_index, slot_index.zero? ? :player1 : :player2 ]
+      end
+    end
 
     available_slots = []
     matches.each_with_index do |match, index|
