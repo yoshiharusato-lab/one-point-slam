@@ -38,6 +38,18 @@ export default class extends Controller {
     return (boxPair[0] + boxPair[1]) / 2
   }
 
+  // k個(前ラウンドの対戦カード数)を、隣り合った順番のまま m個(次のラウンドの
+  // 対戦カード数)の枠へできるだけ均等に振り分ける(bracket_advancer.rb の
+  // round1_groups と同じ考え方)。例えば k=7, m=4 なら [0,1]→枠0, [2,3]→枠1,
+  // [4,5]→枠2, [6]→枠3。単純な余り(index % 枠数)で散らすと、盤面上で遠く
+  // 離れた対戦カード同士が同じ枠に組み合わされ、対戦カードが引き伸ばされて
+  // 線がどこに向かっているのか分からなくなる。
+  roundGroups(k, m) {
+    const groups = Array.from({ length: m }, () => [])
+    for (let i = 0; i < k; i++) groups[Math.floor((i * m) / k)].push(i)
+    return groups
+  }
+
   // ボトムアップでの位置計算：
   // ラウンド0(1回戦)の枠は等間隔に並べ、それ以降の枠は「その枠に勝ち上がってくる
   // 対戦カード(子)の2枠の中間点」に置く。こうすると子の対戦カードから伸びる線が
@@ -66,15 +78,17 @@ export default class extends Controller {
       const matches = sortedRounds[idx].querySelectorAll(".matches > .match")
       // connectSide と同じ判定: 1回戦はシードの人数次第で、前のラウンドの対戦カード数が
       // ちょうど2倍にならないことがある(例: 12人なら1回戦2試合・2回戦2試合)。その
-      // 場合は bracket_advancer.rb の seat_round1_winners_on_side と同じ「対戦カードへ
-      // 1人ずつ均等に割り振る」対応関係で子の位置を探す。
+      // 場合は bracket_advancer.rb の seat_round1_winners_on_side と同じ「隣り合った
+      // 対戦カードごとにまとめる」対応関係で子の位置を探す。
       const useSpread = childPairs.length !== matches.length * 2
+      const groups = useSpread ? this.roundGroups(childPairs.length, matches.length) : null
       boxYByRound[r] = []
       matches.forEach((_m, i) => {
         const ys = []
         if (useSpread) {
-          const child0 = childPairs[i]
-          const child1 = childPairs[i + matches.length]
+          const [ c0, c1 ] = groups[i]
+          const child0 = childPairs[c0]
+          const child1 = c1 !== undefined ? childPairs[c1] : undefined
           ys.push(child0 ? this.mergeY(child0) : height / 2)
           ys.push(child1 ? this.mergeY(child1) : ys[0] + BOX_H + SLOT_GAP)
         } else {
@@ -218,9 +232,16 @@ export default class extends Controller {
       const nextMatches = isLast ? null : rounds[r + 1].querySelectorAll(".matches > .match")
       // 1回戦はシード(不戦勝)の人数次第で、次のラウンドの対戦カード数がちょうど
       // 半分にならないことがある(例: 12人なら1回戦2試合・2回戦2試合)。その場合は
-      // bracket_advancer.rb の seat_round1_winners_on_side と同じ「1人ずつ均等に
-      // 割り振る」順番(対戦カードへ順番に、まず1人目→次の周でまた1人目…)で線を引く。
+      // bracket_advancer.rb の seat_round1_winners_on_side と同じ「隣り合った対戦
+      // カードごとにまとめる」対応関係で線を引く。
       const useSpread = !isLast && matches.length !== nextMatches.length * 2
+      let reverseGroups = null
+      if (useSpread) {
+        reverseGroups = []
+        this.roundGroups(matches.length, nextMatches.length).forEach((indices, matchIndex) => {
+          indices.forEach((originIndex, slotIndex) => { reverseGroups[originIndex] = [ matchIndex, slotIndex ] })
+        })
+      }
 
       for (let i = 0; i < matches.length; i++) {
         let parentMatch, parentSlot
@@ -228,8 +249,9 @@ export default class extends Controller {
           parentMatch = finalMatch
           parentSlot = mirrored ? 1 : 0
         } else if (useSpread) {
-          parentMatch = nextMatches[i % nextMatches.length]
-          parentSlot = Math.floor(i / nextMatches.length)
+          const [ matchIndex, slotIndex ] = reverseGroups[i]
+          parentMatch = nextMatches[matchIndex]
+          parentSlot = slotIndex
         } else {
           parentMatch = nextMatches[Math.floor(i / 2)]
           parentSlot = i % 2
