@@ -53,4 +53,15 @@ class PersonalRoundLabelTest < ActiveSupport::TestCase
 
     assert_equal "第2回戦敗退（#{winner.display_name}）", PersonalRoundLabel.progress_label(loser)
   end
+
+  test "a not-yet-started match shows the opponent's name in the next-match label" do
+    tournament = build_tournament(6)
+    BracketGenerator.new(tournament).generate!
+
+    match = tournament.matches.find_by(round: 1)
+    player = match.player1
+    opponent = match.player2
+
+    assert_equal "第1回戦（#{opponent.display_name}との次の対戦）", PersonalRoundLabel.progress_label(player)
+  end
 end
