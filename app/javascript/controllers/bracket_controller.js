@@ -64,12 +64,24 @@ export default class extends Controller {
       const prevR = parseInt(sortedRounds[idx - 1].dataset.round, 10)
       const childPairs = boxYByRound[prevR] || []
       const matches = sortedRounds[idx].querySelectorAll(".matches > .match")
+      // connectSide と同じ判定: 1回戦はシードの人数次第で、前のラウンドの対戦カード数が
+      // ちょうど2倍にならないことがある(例: 12人なら1回戦2試合・2回戦2試合)。その
+      // 場合は bracket_advancer.rb の seat_round1_winners_on_side と同じ「対戦カードへ
+      // 1人ずつ均等に割り振る」対応関係で子の位置を探す。
+      const useSpread = childPairs.length !== matches.length * 2
       boxYByRound[r] = []
       matches.forEach((_m, i) => {
         const ys = []
-        for (let s = 0; s < 2; s++) {
-          const child = childPairs[i * 2 + s]
-          ys.push(child ? this.mergeY(child) : (ys[0] !== undefined ? ys[0] + BOX_H + SLOT_GAP : height / 2))
+        if (useSpread) {
+          const child0 = childPairs[i]
+          const child1 = childPairs[i + matches.length]
+          ys.push(child0 ? this.mergeY(child0) : height / 2)
+          ys.push(child1 ? this.mergeY(child1) : ys[0] + BOX_H + SLOT_GAP)
+        } else {
+          for (let s = 0; s < 2; s++) {
+            const child = childPairs[i * 2 + s]
+            ys.push(child ? this.mergeY(child) : (ys[0] !== undefined ? ys[0] + BOX_H + SLOT_GAP : height / 2))
+          }
         }
         boxYByRound[r].push(ys)
       })
@@ -204,12 +216,26 @@ export default class extends Controller {
       const matches = rounds[r].querySelectorAll(".matches > .match")
       const isLast = r === rounds.length - 1
       const nextMatches = isLast ? null : rounds[r + 1].querySelectorAll(".matches > .match")
+      // 1回戦はシード(不戦勝)の人数次第で、次のラウンドの対戦カード数がちょうど
+      // 半分にならないことがある(例: 12人なら1回戦2試合・2回戦2試合)。その場合は
+      // bracket_advancer.rb の seat_round1_winners_on_side と同じ「1人ずつ均等に
+      // 割り振る」順番(対戦カードへ順番に、まず1人目→次の周でまた1人目…)で線を引く。
+      const useSpread = !isLast && matches.length !== nextMatches.length * 2
 
       for (let i = 0; i < matches.length; i++) {
-        const parentMatch = isLast ? finalMatch : nextMatches[Math.floor(i / 2)]
+        let parentMatch, parentSlot
+        if (isLast) {
+          parentMatch = finalMatch
+          parentSlot = mirrored ? 1 : 0
+        } else if (useSpread) {
+          parentMatch = nextMatches[i % nextMatches.length]
+          parentSlot = Math.floor(i / nextMatches.length)
+        } else {
+          parentMatch = nextMatches[Math.floor(i / 2)]
+          parentSlot = i % 2
+        }
         if (!parentMatch) continue
 
-        const parentSlot = isLast ? (mirrored ? 1 : 0) : i % 2
         const parentBox = parentMatch.querySelectorAll(".player")[parentSlot]
         if (!parentBox) continue
 
