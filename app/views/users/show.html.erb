@@ -15,9 +15,8 @@
     </div>
 
     <% if @user == current_user %>
-      <%= form_with model: @user, method: :patch, class: "mt-2 flex items-center gap-2" do |form| %>
+      <%= form_with model: @user, method: :patch, class: "mt-2" do |form| %>
         <%= form.file_field :avatar, accept: "image/png,image/jpeg,image/gif,image/webp", data: { avatar_preview_target: "input", action: "change->avatar-preview#preview" }, class: "text-xs text-slate-500 file:mr-2 file:px-3 file:py-1.5 file:rounded-lg file:border-0 file:bg-emerald-50 file:text-emerald-700 file:font-medium file:cursor-pointer" %>
-        <%= form.submit "画像を変更", class: "px-3 py-1.5 bg-emerald-600 text-white rounded-lg hover:bg-emerald-500 font-medium text-xs cursor-pointer" %>
       <% end %>
     <% end %>
   </div>

@@ -8,5 +8,6 @@ export default class extends Controller {
     if (!file) return
 
     this.imageTarget.src = URL.createObjectURL(file)
+    this.inputTarget.form.requestSubmit()
   }
 }
