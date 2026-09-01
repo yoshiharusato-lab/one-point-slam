@@ -8,7 +8,7 @@ export default class extends Controller {
     if (!file) return
 
     this.imageTarget.src = URL.createObjectURL(file)
-    if (this.hasStatusTarget) this.statusTarget.textContent = file.name
+    if (this.hasStatusTarget) this.statusTarget.textContent = "画像未保存"
     this.inputTarget.form.requestSubmit()
   }
 }
