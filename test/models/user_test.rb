@@ -48,4 +48,21 @@ class UserTest < ActiveSupport::TestCase
     assert_not user.valid?
     assert user.errors[:name].present?
   end
+
+  test "an account predating the name/email format rules can still update unrelated fields" do
+    legacy = User.new(name: "千葉太郎", email_address: "legacy@example.com", password: "password123")
+    legacy.save!(validate: false)
+
+    legacy.day2_attending = true
+    assert legacy.save, legacy.errors.full_messages.to_s
+  end
+
+  test "changing the name on a legacy account still enforces the format" do
+    legacy = User.new(name: "千葉太郎", email_address: "legacy2@example.com", password: "password123")
+    legacy.save!(validate: false)
+
+    legacy.name = "also not the right format"
+    assert_not legacy.save
+    assert legacy.errors[:name].present?
+  end
 end
