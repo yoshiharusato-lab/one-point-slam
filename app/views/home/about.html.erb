@@ -1,12 +1,20 @@
+<%
+  # public/ 配下の画像はアセットパイプラインを通らずファイル名のまま配信され、
+  # かつ1年間キャッシュされる(cache-control: max-age=31556952)。画像を更新しても
+  # URLが変わらないとブラウザに古いキャッシュのまま表示され続けてしまうため、
+  # 更新日時をクエリ文字列に付けてキャッシュを無効化する。
+  about_background_path = Rails.root.join("public/images/about_background.png")
+  about_background_version = File.mtime(about_background_path).to_i
+%>
 <style>
-  /* 背景画像(1672x941の横長)は、スマホのような縦長画面で background-size: cover
-     にすると中央の一部だけを大きく切り抜くことになり、人物の顔などが不自然に
-     拡大されて見えてしまう。contain で画像全体を必ず収め、はみ出す部分は
+  /* 背景画像は、スマホのような縦長画面で background-size: cover にすると
+     中央の一部だけを大きく切り抜くことになり、人物の顔などが不自然に拡大
+     されて見えてしまう。contain で画像全体を必ず収め、はみ出す部分は
      background-color(濃紺)で埋めることで、どんな画面幅でも拡大されずに
      全体が表示されるようにする。 */
   body.about-page {
     background-color: #0a1220;
-    background-image: url("/images/about_background.png");
+    background-image: url("/images/about_background.png?v=<%= about_background_version %>");
     background-size: contain;
     background-position: top center;
     background-repeat: no-repeat;
