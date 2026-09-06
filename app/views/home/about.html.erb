@@ -1,19 +1,16 @@
 <style>
+  /* 背景画像(1672x941の横長)は、スマホのような縦長画面で background-size: cover
+     にすると中央の一部だけを大きく切り抜くことになり、人物の顔などが不自然に
+     拡大されて見えてしまう。contain で画像全体を必ず収め、はみ出す部分は
+     background-color(濃紺)で埋めることで、どんな画面幅でも拡大されずに
+     全体が表示されるようにする。 */
   body.about-page {
     background-color: #0a1220;
     background-image: url("/images/about_background.png");
-    background-size: cover;
-    background-position: center;
+    background-size: contain;
+    background-position: top center;
     background-repeat: no-repeat;
-    background-attachment: fixed;
-  }
-  /* スマホのブラウザは background-attachment: fixed だと画面全体ではなく
-     アドレスバーなどを含めた実際より大きい仮想的な高さを基準に背景を
-     引き伸ばしてしまい、拡大されたように見えるため、スマホ幅では無効にする。 */
-  @media (max-width: 768px) {
-    body.about-page {
-      background-attachment: scroll;
-    }
+    background-attachment: scroll;
   }
   .ops-container {
     font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
