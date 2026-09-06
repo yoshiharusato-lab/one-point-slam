@@ -28,7 +28,7 @@
           <% if authenticated? %>
             <%= link_to "🏆 Tournament", tournaments_path, class: nav_link_class(controller_name == "tournaments") %>
             <%= link_to "⚔️ Next Match", my_match_path, class: nav_link_class(controller_name == "home" && action_name == "my_match") %>
-            <%= link_to "👥 ユーザーリスト", users_path, class: nav_link_class(controller_name == "users" && action_name == "index") %>
+            <%= link_to "👥 メンバーリスト", users_path, class: nav_link_class(controller_name == "users" && action_name == "index") %>
             <% if current_user.admin? %>
               <%= link_to "トーナメント作成", new_tournament_path, class: "px-3 py-1.5 bg-emerald-600 text-white rounded-lg hover:bg-emerald-500 font-medium whitespace-nowrap" %>
             <% end %>
