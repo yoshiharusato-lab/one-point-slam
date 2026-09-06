@@ -7,6 +7,14 @@
     background-repeat: no-repeat;
     background-attachment: fixed;
   }
+  /* スマホのブラウザは background-attachment: fixed だと画面全体ではなく
+     アドレスバーなどを含めた実際より大きい仮想的な高さを基準に背景を
+     引き伸ばしてしまい、拡大されたように見えるため、スマホ幅では無効にする。 */
+  @media (max-width: 768px) {
+    body.about-page {
+      background-attachment: scroll;
+    }
+  }
   .ops-container {
     font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
     color: #222;
