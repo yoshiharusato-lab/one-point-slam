@@ -30,7 +30,9 @@
 
 .tournament-bracket-wrap {
   position: relative;
-  overflow: visible;
+  overflow-x: auto;
+  overflow-y: visible;
+  -webkit-overflow-scrolling: touch;
   padding: 20px 0;
   background: #fff;
   width: 100%;
