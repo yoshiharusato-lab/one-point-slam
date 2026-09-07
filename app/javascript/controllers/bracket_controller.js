@@ -213,16 +213,10 @@ export default class extends Controller {
     while (svg.firstChild) svg.removeChild(svg.firstChild)
 
     const wrapRect = this.element.getBoundingClientRect()
-    // 横スクロールで縮小率に下限をかけたトーナメント表がラップ幅より広がっている
-    // ことがあるため、SVGの大きさは見えている範囲(wrapRect)ではなく、スクロール
-    // 込みの全体幅(scrollWidth)に合わせる。そうしないとスクロールしないと見えない
-    // 部分の接続線が描画エリア外になって消えてしまう。
-    const svgWidth = Math.max(wrapRect.width, this.element.scrollWidth)
-    const svgHeight = Math.max(wrapRect.height, this.element.scrollHeight)
-    svg.setAttribute("width", svgWidth)
-    svg.setAttribute("height", svgHeight)
-    svg.style.width = `${svgWidth}px`
-    svg.style.height = `${svgHeight}px`
+    svg.setAttribute("width", wrapRect.width)
+    svg.setAttribute("height", wrapRect.height)
+    svg.style.width = `${wrapRect.width}px`
+    svg.style.height = `${wrapRect.height}px`
 
     const centerMatch = this.bracketTarget.querySelector('.round[data-side="center"] .match')
     if (!centerMatch) return
@@ -320,12 +314,6 @@ export default class extends Controller {
     svg.appendChild(line)
   }
 
-  // 画面幅に収まらないぶんを全部縮小すると、ラウンド数の多いトーナメントほど
-  // スマホで文字が読めないほど小さくなってしまうため、縮小率に下限を設ける。
-  // 下限を下回ってもまだ収まらない場合は、.tournament-bracket-wrap を横スクロール
-  // させて見てもらう(CSS側で overflow-x: auto にしている)。
-  MIN_SCALE = 0.65
-
   fitBracketScale() {
     const bracket = this.bracketTarget
 
@@ -336,8 +324,7 @@ export default class extends Controller {
     const naturalWidth = bracket.scrollWidth
     const naturalHeight = bracket.scrollHeight
 
-    const rawScale = wrapWidth > 0 && naturalWidth > wrapWidth ? wrapWidth / naturalWidth : 1
-    const scale = Math.max(rawScale, this.MIN_SCALE)
+    const scale = wrapWidth > 0 && naturalWidth > wrapWidth ? wrapWidth / naturalWidth : 1
     bracket.style.transform = `scale(${scale})`
 
     const visualHeight = naturalHeight * scale
