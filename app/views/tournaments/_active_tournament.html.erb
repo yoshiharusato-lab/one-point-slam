@@ -2,6 +2,6 @@
   <%= turbo_stream_from @tournament %>
 
   <div id="bracket">
-    <%= render "tournaments/bracket", tournament: @tournament, viewing_user: current_user %>
+    <%= render "tournaments/bracket", tournament: @tournament %>
   </div>
 <% end %>
