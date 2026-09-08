@@ -314,18 +314,6 @@ button.player {
   }
 }
 
-.tree-bracket__hint {
-  margin-top: 0.75rem;
-  text-align: center;
-  font-size: 0.68rem;
-  color: #64748b;
-}
-
-.tree-bracket__hint-accent {
-  color: #34d399;
-  font-weight: 600;
-}
-
 /* 自分の対戦カード */
 .my-match-card {
   background: #fff;
