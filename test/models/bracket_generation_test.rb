@@ -123,6 +123,25 @@ class BracketGenerationTest < ActiveSupport::TestCase
     end
   end
 
+  test "a winner appears in the next round immediately, without waiting for sibling matches" do
+    tournament = build_tournament(8)
+    BracketGenerator.new(tournament).generate!
+
+    round1 = tournament.matches.where(round: 1).order(:position).to_a
+    only_match = round1.first
+    winner = only_match.player1
+    only_match.submit_report!(only_match.player1, winner)
+    only_match.submit_report!(only_match.player2, winner)
+
+    other_round1_matches = round1.drop(1)
+    assert other_round1_matches.all? { |m| m.reload.playable? },
+      "the other round-1 matches should be untouched and still awaiting their own result"
+
+    round2 = tournament.matches.where(round: 2).order(:position).to_a
+    assert_includes round2.flat_map { |m| [ m.player1, m.player2 ] }, winner,
+      "the winner should already occupy their round-2 slot, without waiting for the other round-1 matches"
+  end
+
   test "generate! refuses to start with fewer than 2 participants" do
     tournament = build_tournament(1)
 

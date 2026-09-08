@@ -96,10 +96,6 @@ class BracketGenerator
         end
       end
 
-      if @tournament.matches.where(round: 1).all?(&:completed?)
-        BracketAdvancer.on_round_complete(@tournament, 1)
-      end
-
       @tournament.update!(status: "active", started_at: Time.current)
     end
   end

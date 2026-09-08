@@ -90,7 +90,7 @@ class Match < ApplicationRecord
 
     winner_participant = votes[player1_id] == player1_id ? player1 : player2
     update!(winner: winner_participant, status: "completed")
-    BracketAdvancer.on_round_complete(tournament, round)
+    BracketAdvancer.on_match_complete(self)
     tournament.update!(status: "completed") if final_match? && tournament.champion.present?
   end
 
