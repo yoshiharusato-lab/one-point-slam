@@ -2,6 +2,9 @@
   layout = bracket_left_right_center(tournament)
   champion = tournament.champion
 
+  # トーナメント全体表示からは勝者を報告できないようにする(報告は Next Match
+  # ページ(_my_match.html.erb)からのみ行える)。ここでは常にプロフィールへの
+  # リンクとして表示する。
   render_player = lambda do |participant, match|
     state_class = bracket_player_state_class(participant, match)
     player_content = lambda do
@@ -11,15 +14,7 @@
       ])
     end
 
-    if bracket_can_vote?(match, participant, viewing_user)
-      button_to match_report_path(match),
-        method: :post,
-        params: { chosen_winner_id: participant.id },
-        form: { class: "player-form" },
-        class: [ "player", state_class ].reject(&:blank?).join(" "),
-        title: "クリックして勝者として報告する",
-        &player_content
-    elsif participant
+    if participant
       link_to user_path(participant.user),
         class: [ "player", state_class ].reject(&:blank?).join(" "),
         &player_content
