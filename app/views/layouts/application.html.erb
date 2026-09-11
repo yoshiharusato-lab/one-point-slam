@@ -32,7 +32,7 @@
             <% if current_user.admin? %>
               <%= link_to "トーナメント作成", new_tournament_path, class: "px-3 py-1.5 bg-emerald-600 text-white rounded-lg hover:bg-emerald-500 font-medium whitespace-nowrap" %>
             <% end %>
-            <%= link_to user_path(current_user), class: "#{nav_link_class(controller_name == 'users' && action_name == 'show' && params[:id] == current_user.id.to_s)} hidden sm:inline-flex items-center gap-2" do %>
+            <%= link_to user_path(current_user), class: "#{nav_link_class(controller_name == 'users' && action_name == 'show' && params[:id] == current_user.id.to_s)} inline-flex items-center gap-2" do %>
               <%= user_avatar_tag(current_user, css_class: "avatar avatar--sm") %>
               <%= current_user.name %>
               <% if current_user.admin? %>
