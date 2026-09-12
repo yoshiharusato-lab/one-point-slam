@@ -26,7 +26,7 @@ class UsersController < ApplicationController
     end
 
     @user.update!(profile_params)
-    redirect_to @user, notice: "プロフィールを更新しました"
+    redirect_to @user, notice: "更新しました"
   end
 
   private
