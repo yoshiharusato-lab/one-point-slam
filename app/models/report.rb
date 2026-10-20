@@ -1,7 +1,7 @@
 class Report < ApplicationRecord
   belongs_to :match
-  belongs_to :reporter, class_name: "Participant"
-  belongs_to :chosen_winner, class_name: "Participant"
+  belongs_to :reporter, class_name: "Participant", inverse_of: :reports
+  belongs_to :chosen_winner, class_name: "Participant", inverse_of: :reports_as_chosen_winner
 
   validates :reporter_id, uniqueness: { scope: :match_id }
   validate :reporter_is_a_player_in_the_match

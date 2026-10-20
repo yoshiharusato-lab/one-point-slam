@@ -5,6 +5,7 @@ class Participant < ApplicationRecord
   has_many :matches_as_player2, class_name: "Match", foreign_key: :player2_id, dependent: :nullify, inverse_of: :player2
   has_many :matches_won, class_name: "Match", foreign_key: :winner_id, dependent: :nullify, inverse_of: :winner
   has_many :reports, foreign_key: :reporter_id, dependent: :destroy, inverse_of: :reporter
+  has_many :reports_as_chosen_winner, class_name: "Report", foreign_key: :chosen_winner_id, dependent: :destroy, inverse_of: :chosen_winner
 
   validates :display_name, presence: true
   validates :user_id, uniqueness: { scope: :tournament_id }
@@ -30,9 +31,12 @@ class Participant < ApplicationRecord
   end
 
   # 1回戦をシード(不戦勝)で免除され、まだ対戦相手(1回戦の勝者)が決まっていない状態。
+  # first_match が完了・進行中でも(!playable? は completed な試合にも true になる)
+  # そちらを「1回戦待機中」と誤表示しないよう、pending(まだ相手が決まっていない)
+  # のときだけを待機中とみなす。
   def waiting_first_round?
     first_match = matches.first
-    first_match.present? && first_match.round > 1 && !first_match.playable?
+    first_match.present? && first_match.round > 1 && first_match.status == "pending"
   end
 
   def opponent_in(match)
